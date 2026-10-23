@@ -1,0 +1,437 @@
+.foryou-page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-top: 64px;
+  padding-bottom: 76px;
+  background-color: var(--surface);
+}
+
+/* Top Header & Match Score Strip */
+.foryou-header-strip {
+  padding: 12px var(--margin) 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.match-score-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.recommended-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  background: var(--surface-container-lowest);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--on-surface);
+}
+
+.match-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background: rgba(232, 221, 255, 0.6);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--on-secondary-fixed);
+}
+
+.style-profile-banner {
+  background-color: var(--surface-container-low);
+  padding: 10px 14px;
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+}
+
+.profile-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.profile-banner-text {
+  font-size: 0.8125rem;
+  color: var(--on-surface-variant);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.edit-profile-btn {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* Curated Garments Section (PRESERVED FROM STITCH DESIGN) */
+.curated-section {
+  padding: 8px var(--margin) 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-bottom: 1px solid rgba(232, 229, 223, 0.6);
+}
+
+.section-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-heading {
+  font-family: var(--font-headline);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--on-surface);
+}
+
+.garments-carousel {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.garment-card {
+  width: 165px;
+  flex-shrink: 0;
+  background-color: var(--surface-container-lowest);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(232, 229, 223, 0.5);
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(27, 27, 30, 0.04);
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.garment-card:hover {
+  transform: translateY(-2px);
+}
+
+.garment-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  background-color: var(--surface-container);
+  overflow: hidden;
+}
+
+.garment-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.match-tag {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+  background: rgba(48, 48, 51, 0.75);
+  backdrop-filter: blur(6px);
+  color: var(--secondary-fixed-dim);
+  font-size: 0.625rem;
+  font-weight: 700;
+}
+
+.garment-info {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.garment-brand {
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: var(--outline);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.garment-name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--on-surface);
+  line-height: 1.25;
+  height: 32px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.garment-price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+
+.garment-price {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--on-surface);
+}
+
+.garment-try-btn {
+  padding: 4px 8px;
+  border-radius: var(--radius-full);
+  background-color: var(--secondary-fixed);
+  color: var(--primary);
+  border: none;
+  cursor: pointer;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* Continuous Vertical Feed Container */
+.foryou-feed-container {
+  padding: 16px var(--margin) 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.foryou-feed-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: -8px;
+}
+
+.feed-title {
+  font-family: var(--font-headline);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--on-surface);
+}
+
+.feed-subtitle {
+  font-size: 0.75rem;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* Individual For You Feed Card */
+.foryou-post-card {
+  background-color: var(--surface-container-lowest);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 4px 24px -4px rgba(27, 27, 30, 0.06);
+  border: 1px solid rgba(232, 229, 223, 0.5);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.foryou-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+}
+
+.foryou-creator-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.foryou-creator-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  background-color: var(--surface-container);
+  box-shadow: 0 0 0 2px var(--secondary-fixed);
+}
+
+.foryou-creator-name-col {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.foryou-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.foryou-creator-name {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.foryou-match-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background-color: rgba(232, 221, 255, 0.7);
+  color: var(--on-secondary-fixed);
+  font-size: 0.625rem;
+  font-weight: 700;
+}
+
+.foryou-creator-handle {
+  font-size: 0.75rem;
+  color: var(--on-surface-variant);
+}
+
+/* 4:5 Media Container (Press-and-Hold enabled, NO hotspots) */
+.foryou-media-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background-color: var(--surface-container-highest);
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.foryou-media-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.25s ease;
+  pointer-events: none;
+}
+
+.foryou-media-frame:active .foryou-media-img {
+  transform: scale(0.99);
+}
+
+/* Bottom Tagged & Category Overlay */
+.foryou-overlay-bar {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.foryou-details-pill {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background: rgba(48, 48, 51, 0.8);
+  backdrop-filter: blur(12px);
+  color: var(--inverse-on-surface);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.foryou-category-badge {
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: rgba(48, 48, 51, 0.65);
+  backdrop-filter: blur(8px);
+  color: var(--inverse-on-surface);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+/* Action Bar */
+.foryou-action-bar {
+  padding: 12px 16px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.foryou-actions-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.foryou-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Caption and Tags */
+.foryou-card-details {
+  padding: 4px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.foryou-caption {
+  font-size: 0.875rem;
+  color: var(--on-surface);
+  line-height: 1.45;
+}
+
+.foryou-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.foryou-tag {
+  font-size: 0.75rem;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.foryou-time {
+  font-size: 0.6875rem;
+  color: var(--on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.75;
+  margin-top: 4px;
+}

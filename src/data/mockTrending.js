@@ -1,0 +1,52 @@
+import { MOCK_OUTFITS } from './mockOutfits';
+
+export const TRENDING_CATEGORIES = [
+  { id: 'all', label: 'All Trending', icon: 'local_fire_department' },
+  { id: 'streetwear', label: 'Streetwear' },
+  { id: 'ethnic wear', label: 'Ethnic Wear' },
+  { id: 'formal outfits', label: 'Formal Luxury' },
+  { id: 'party wear', label: 'Party Glam' },
+  { id: 'dresses', label: 'Dresses' },
+  { id: 'college outfits', label: 'College' },
+  { id: 'seasonal looks', label: 'Seasonal' },
+  { id: 'casual', label: 'Minimal Capsule' },
+];
+
+export const MOCK_TRENDING_LOOKS = MOCK_OUTFITS.map((outfit, index) => ({
+  id: `trend-${outfit.id}`,
+  outfitId: outfit.id,
+  category: outfit.category,
+  title: outfit.name,
+  rankingBadge: `TRENDING #${index + 1} WORLDWIDE`,
+  image: outfit.image,
+  fallbackImage: outfit.fallbackImage,
+  alt: `${outfit.name} - Trending Look`,
+  creator: {
+    id: outfit.source.id,
+    name: outfit.source.name,
+    handle: outfit.source.handle,
+    role: outfit.source.isRetailer ? 'Official Brand' : 'Pro Stylist',
+    avatar: outfit.source.avatar,
+    verified: outfit.source.verified,
+    isRetailer: outfit.source.isRetailer,
+    isFollowing: false,
+  },
+  likes: outfit.likes > 1000 ? `${(outfit.likes / 1000).toFixed(1)}k` : `${outfit.likes}`,
+  likesNumber: outfit.likes,
+  shares: outfit.shares,
+  capsuleName: `${outfit.source.name} Collection`,
+  priceRange: `$${Math.max(45, outfit.price - 60)} – $${outfit.price}`,
+  price: outfit.price,
+  rating: outfit.rating,
+  reviewCount: outfit.reviewCount,
+  availableSizes: outfit.availableSizes,
+  shoppingUrl: outfit.shoppingUrl,
+  garments: outfit.garments,
+  defaultGarment: {
+    id: `prod-${outfit.id}`,
+    name: outfit.name,
+    brand: outfit.source.name,
+    price: outfit.price,
+    image: outfit.image,
+  },
+}));

@@ -1,0 +1,426 @@
+.profile-page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-top: 64px;
+  padding-bottom: 76px;
+  background-color: var(--surface);
+}
+
+.profile-hero {
+  padding: 16px var(--margin);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-color: var(--surface);
+}
+
+.profile-identity-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.profile-avatar-container {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.profile-avatar-lg {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: block;
+  background-color: var(--surface-container-high);
+}
+
+.avatar-edit-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  background-color: var(--primary);
+  color: var(--on-primary);
+  border: 2px solid var(--surface);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.profile-meta-col {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.profile-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.profile-name {
+  font-family: var(--font-headline);
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--on-surface);
+  letter-spacing: -0.01em;
+}
+
+.explorer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background-color: var(--secondary-fixed);
+  color: var(--on-secondary-fixed);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.profile-handle {
+  font-size: 0.8125rem;
+  color: var(--on-surface-variant);
+  margin-top: 2px;
+}
+
+.stylist-tier {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--primary);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 4px;
+}
+
+.profile-bio-box {
+  background-color: var(--surface-container-low);
+  padding: 10px 14px;
+  border-radius: var(--radius-lg);
+  font-size: 0.8125rem;
+  color: var(--on-surface);
+  line-height: 1.5;
+}
+
+/* Stats Matrix */
+.stats-matrix {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  padding: 8px 0;
+  background-color: var(--surface-container);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.stat-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-val {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--on-surface);
+}
+
+.stat-val.primary {
+  color: var(--primary);
+}
+
+.stat-lbl {
+  font-size: 0.6875rem;
+  color: var(--on-surface-variant);
+  margin-top: 2px;
+}
+
+/* Quick Action Cluster */
+.profile-actions-cluster {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-btn {
+  padding: 10px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.profile-btn:active {
+  transform: scale(0.95);
+}
+
+.profile-btn-secondary {
+  flex: 1;
+  background-color: var(--surface-container-high);
+  color: var(--on-surface);
+}
+
+.profile-btn-primary {
+  flex: 1.2;
+  background-color: var(--primary-container);
+  color: var(--on-primary);
+  box-shadow: 0 4px 12px rgba(99, 14, 212, 0.25);
+}
+
+/* Sticky Profile Sub-Tabs */
+.profile-subtabs {
+  position: sticky;
+  top: 64px;
+  z-index: 30;
+  background: rgba(251, 248, 252, 0.95);
+  backdrop-filter: blur(12px);
+  padding: 0 var(--margin);
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(232, 229, 223, 0.6);
+}
+
+.profile-tab {
+  flex: 1;
+  padding: 14px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--on-surface-variant);
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.profile-tab.active {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.tab-indicator-line {
+  position: absolute;
+  bottom: 0;
+  left: 20%;
+  right: 20%;
+  height: 2.5px;
+  border-radius: var(--radius-full);
+  background-color: var(--primary);
+}
+
+/* Vault Privacy Banner */
+.tryons-section {
+  padding: 16px var(--margin) 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.vault-banner {
+  background-color: var(--surface-container-low);
+  padding: 12px 16px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+}
+
+.vault-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.vault-lock-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background-color: var(--secondary-fixed);
+  color: var(--on-secondary-fixed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Try-On Grid */
+.tryons-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.tryon-card {
+  background-color: var(--surface-container-lowest);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(232, 229, 223, 0.5);
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(27, 27, 30, 0.04);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease;
+}
+
+.tryon-card:hover {
+  transform: translateY(-2px);
+}
+
+.tryon-card-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background-color: var(--surface-container);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.tryon-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+.tryon-privacy-pill {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  font-size: 0.625rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  border: none;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  z-index: 10;
+}
+
+.tryon-privacy-pill.private {
+  background: rgba(48, 48, 51, 0.85);
+  color: var(--inverse-on-surface);
+}
+
+.tryon-privacy-pill.public {
+  background: rgba(99, 14, 212, 0.9);
+  color: var(--on-primary);
+}
+
+.tryon-card-info {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tryon-brand-tag {
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+}
+
+.tryon-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--on-surface);
+  line-height: 1.25;
+  height: 32px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.tryon-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+
+.tryon-price {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--on-surface);
+}
+
+.tryon-del-btn {
+  background: none;
+  border: none;
+  color: var(--outline);
+  cursor: pointer;
+  padding: 2px;
+}
+
+.tryon-del-btn:hover {
+  color: var(--error);
+}
+
+/* My Posts Grid */
+.my-posts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 12px var(--margin) 24px;
+}
+
+.my-post-tile {
+  position: relative;
+  aspect-ratio: 1;
+  background-color: var(--surface-container);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.my-post-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.my-post-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.my-post-tile:hover .my-post-overlay {
+  opacity: 1;
+}

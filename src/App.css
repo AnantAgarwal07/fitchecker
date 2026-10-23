@@ -1,0 +1,14 @@
+.app-container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  background-color: #efe9f3;
+}
+
+.main-scroll-area {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
