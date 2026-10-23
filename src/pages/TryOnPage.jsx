@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { MOCK_PRODUCTS } from '../data/mockProducts';
+import { api } from '../services/api';
 import './TryOnPage.css';
 
 export default function TryOnPage() {
   const {
     activeTryOn,
+    setActiveTryOn,
     sourcePersona,
     setSourcePersona,
     saveTryOnToCollection,
@@ -17,15 +18,55 @@ export default function TryOnPage() {
   const [selectedPersonaOption, setSelectedPersonaOption] = useState('saved'); // 'saved' | 'upload' | 'camera'
   const [isGarmentPickerOpen, setIsGarmentPickerOpen] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
+  const [catalogProducts, setCatalogProducts] = useState([]);
+  const [isRendering, setIsRendering] = useState(false);
+  const [renderProgress, setRenderProgress] = useState(0);
+  const [productFitData, setProductFitData] = useState(null);
 
   const garment = activeTryOn.garment;
 
+  // Load fit report data for current garment (Phase B5)
+  useEffect(() => {
+    let isMounted = true;
+    async function loadFit() {
+      if (garment?.id) {
+        const numId = typeof garment.id === 'string' ? parseInt(garment.id.replace(/\D/g, ''), 10) || 392 : garment.id;
+        const fitRes = await api.getProductFit(numId);
+        if (isMounted && fitRes) {
+          setProductFitData(fitRes);
+        }
+      }
+    }
+    loadFit();
+    return () => {
+      isMounted = false;
+    };
+  }, [garment?.id]);
+
+  // Load catalog products for the garment change picker
+  useEffect(() => {
+    let isMounted = true;
+    async function loadCatalog() {
+      const data = await api.getProducts({ wearableOnly: true, limit: 30 });
+      if (isMounted && data.products) {
+        setCatalogProducts(data.products);
+      }
+    }
+    loadCatalog();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+
   const handleSaveLook = () => {
     saveTryOnToCollection(activeTryOn);
+    showToast('Look saved to your wardrobe collection!', 'bookmark_added');
   };
 
   const handleShopItem = () => {
-    showToast(`Redirecting to ${garment.brand} official boutique...`, 'shopping_bag');
+    const url = garment.shopUrl || 'https://www.myntra.com';
+    window.open(url, '_blank');
   };
 
   const handleShareLook = () => {
@@ -33,10 +74,70 @@ export default function TryOnPage() {
     showToast('Look link copied to clipboard!', 'share');
   };
 
-  const handleSelectGarment = (prod) => {
-    setGarmentForTryOn(prod);
+  const handleSelectGarment = async (prod) => {
     setIsGarmentPickerOpen(false);
-    showToast(`Styling ${prod.name} on model...`, 'auto_awesome');
+    setIsRendering(true);
+    setRenderProgress(20);
+    showToast(`Dressing model in ${prod.name}...`, 'auto_awesome');
+
+    try {
+      // 1. Submit try-on request to backend
+      const res = await api.submitTryOn({
+        userId: 'u-ananya-sharma-001',
+        productId: prod.id,
+        userPhotoUrl: activeTryOn.originalPhoto || 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&auto=format&fit=crop&q=80',
+        userHeightCm: 165,
+        sizeSelected: prod.sizes?.[0] || 'M',
+      });
+
+      if (res && res.jobId) {
+        // 2. Poll for completion
+        let attempts = 0;
+        const interval = setInterval(async () => {
+          attempts++;
+          const statusRes = await api.pollTryOnJob(res.jobId);
+          if (statusRes) {
+            setRenderProgress(statusRes.progressPercent || Math.min(95, attempts * 25));
+
+            if (statusRes.status === 'COMPLETED') {
+              clearInterval(interval);
+              setIsRendering(false);
+              setRenderProgress(100);
+
+              setActiveTryOn({
+                id: statusRes.tryOnSessionId || `tryon-${Date.now()}`,
+                garment: {
+                  id: prod.id,
+                  name: prod.name,
+                  brand: prod.brand,
+                  price: prod.price,
+                  image: prod.image,
+                  shopUrl: prod.shopUrl,
+                },
+                aiRenderedImage: statusRes.renderedImageUrl || prod.image,
+                originalPhoto: activeTryOn.originalPhoto,
+                fitNote: statusRes.fitNote || `${prod.brand} Tailored Fit`,
+                matchScore: statusRes.fitScore ? `${statusRes.fitScore}%` : '94%',
+              });
+
+              showToast(`Virtual try-on completed! Fit Score: ${statusRes.fitScore || 94}%`, 'check_circle');
+            } else if (statusRes.status === 'FAILED' || attempts > 20) {
+              clearInterval(interval);
+              setIsRendering(false);
+              setGarmentForTryOn(prod);
+              showToast('Generated instant try-on preview', 'auto_awesome');
+            }
+          }
+        }, 600);
+      } else {
+        // Local immediate fallback
+        setIsRendering(false);
+        setGarmentForTryOn(prod);
+      }
+    } catch (e) {
+      setIsRendering(false);
+      setGarmentForTryOn(prod);
+    }
   };
 
   return (
@@ -79,7 +180,7 @@ export default function TryOnPage() {
               className={`persona-card-btn ${selectedPersonaOption === 'upload' ? 'active' : 'inactive'}`}
               onClick={() => {
                 setSelectedPersonaOption('upload');
-                showToast('Upload photo from gallery or file', 'add_photo_alternate');
+                showToast('Upload photo calibrated with 165cm height', 'add_photo_alternate');
               }}
             >
               <div className="persona-icon-circle">
@@ -120,7 +221,7 @@ export default function TryOnPage() {
               <div className="garment-strip-tag-row">
                 <span>Trying On</span>
                 <span>•</span>
-                <span style={{ color: 'var(--on-surface-variant)' }}>${garment.price}</span>
+                <span style={{ color: 'var(--on-surface-variant)' }}>₹{garment.price}</span>
               </div>
               <h2 className="garment-strip-title">{garment.name}</h2>
               <p className="garment-strip-sub">
@@ -163,13 +264,41 @@ export default function TryOnPage() {
             }}
           />
 
+          {/* Rendering Overlay */}
+          {isRendering && (
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                backgroundColor: 'rgba(27, 27, 30, 0.75)',
+                backdropFilter: 'blur(6px)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '12px',
+                zIndex: 10,
+                color: 'var(--on-surface)',
+              }}
+            >
+              <span className="material-symbols-outlined spin" style={{ fontSize: '36px', color: 'var(--primary)' }}>
+                progress_activity
+              </span>
+              <p style={{ fontWeight: 600, fontSize: '0.9375rem' }}>AI Virtual Fitting in Progress...</p>
+              <div style={{ width: '160px', height: '4px', backgroundColor: 'var(--surface-container-high)', borderRadius: '2px', overflow: 'hidden' }}>
+                <div style={{ width: `${renderProgress}%`, height: '100%', backgroundColor: 'var(--primary)', transition: 'width 0.3s ease' }} />
+              </div>
+              <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)' }}>Calibrating drape & seams</span>
+            </div>
+          )}
+
           {/* Top Controls Overlay */}
           <div className="stage-top-controls">
             <div className="mock-preview-pill">
               <span className="material-symbols-outlined fill-1" style={{ fontSize: '14px', color: 'var(--secondary-fixed-dim)' }}>
                 auto_fix_high
               </span>
-              <span>Mock Preview • AI Generated</span>
+              <span>{activeTryOn.matchScore ? `${activeTryOn.matchScore} Match` : 'AI Generated'}</span>
             </div>
 
             <button
@@ -219,6 +348,89 @@ export default function TryOnPage() {
           </div>
         </section>
 
+        {/* Phase B5: Per-Area Fit Report & Ease Breakdown */}
+        {productFitData && (
+          <section
+            style={{
+              padding: '12px 14px',
+              backgroundColor: 'var(--surface-container-low)',
+              borderRadius: '16px',
+              border: '1px solid var(--outline-variant)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'var(--primary)' }}>
+                  straighten
+                </span>
+                <span style={{ fontWeight: 700, fontSize: '0.8125rem' }}>Per-Area Fit & Ease</span>
+              </div>
+              {productFitData.recommendedSize && (
+                <span
+                  style={{
+                    fontSize: '0.6875rem',
+                    fontWeight: 700,
+                    padding: '2px 8px',
+                    borderRadius: '6px',
+                    backgroundColor: 'var(--primary-container)',
+                    color: 'var(--on-primary-container)',
+                  }}
+                >
+                  Size {productFitData.recommendedSize} Recommended
+                </span>
+              )}
+            </div>
+
+            {productFitData.fitDescriptor && (
+              <p style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)' }}>
+                {productFitData.fitDescriptor}
+              </p>
+            )}
+
+            {productFitData.fitReport && productFitData.fitReport.length > 0 && (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: '6px' }}>
+                {productFitData.fitReport.map((item, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      padding: '6px 8px',
+                      borderRadius: '8px',
+                      backgroundColor: 'var(--surface-container-high)',
+                      border: '1px solid var(--outline)',
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.625rem', color: 'var(--on-surface-variant)', textTransform: 'capitalize' }}>
+                      <span>{item.area}</span>
+                      <span
+                        style={{
+                          fontWeight: 700,
+                          color:
+                            item.label === 'tight'
+                              ? '#ff6b6b'
+                              : item.label === 'regular'
+                              ? '#51cf66'
+                              : '#fab005',
+                        }}
+                      >
+                        {item.label}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '2px', marginTop: '2px' }}>
+                      <span style={{ fontSize: '0.875rem', fontWeight: 700 }}>
+                        {item.easeCm >= 0 ? `+${item.easeCm}` : item.easeCm}cm
+                      </span>
+                      <span style={{ fontSize: '0.5625rem', color: 'var(--on-surface-variant)' }}>ease</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
         {/* 4. Action Buttons */}
         <div className="tryon-actions-row">
           <button className="tryon-action-btn tryon-action-save" onClick={handleSaveLook}>
@@ -232,7 +444,7 @@ export default function TryOnPage() {
             <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
               local_mall
             </span>
-            <span>Shop Item · ${garment.price}</span>
+            <span>Shop Item · ₹{garment.price}</span>
           </button>
         </div>
 
@@ -292,7 +504,7 @@ export default function TryOnPage() {
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <h3 style={{ fontFamily: 'var(--font-headline)', fontSize: '1.25rem' }}>
-                Select Garment to Try On
+                Select Garment from Catalog
               </h3>
               <button
                 onClick={() => setIsGarmentPickerOpen(false)}
@@ -303,7 +515,7 @@ export default function TryOnPage() {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', overflowY: 'auto' }}>
-              {MOCK_PRODUCTS.filter((p) => p.image).map((prod) => (
+              {(catalogProducts.length > 0 ? catalogProducts : []).map((prod) => (
                 <div
                   key={prod.id}
                   onClick={() => handleSelectGarment(prod)}
@@ -331,7 +543,7 @@ export default function TryOnPage() {
                       {prod.name}
                     </p>
                     <span style={{ fontSize: '0.8125rem', fontWeight: 700, color: 'var(--on-surface)' }}>
-                      ${prod.price}
+                      ₹{prod.price}
                     </span>
                   </div>
                   {prod.id === garment.id && (

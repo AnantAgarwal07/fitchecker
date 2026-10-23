@@ -1,0 +1,61 @@
+services:
+  # 1. Primary Fastify API Web Service
+  - type: web
+    name: fitsyou-api
+    runtime: docker
+    dockerfilePath: ./server/Dockerfile
+    plan: starter
+    region: singapore
+    numInstances: 1
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+
+  # 2. Virtual Try-On Background Worker
+  - type: worker
+    name: fitsyou-tryon-worker
+    runtime: docker
+    dockerfilePath: ./server/Dockerfile
+    dockerCommand: node dist/worker.js
+    plan: starter
+    region: singapore
+    numInstances: 2
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+
+  # 3. Hourly Trending Velocity Recalculation Cron
+  - type: cron
+    name: fitsyou-trending-cron
+    runtime: docker
+    schedule: "0 * * * *" # Every hour on the hour
+    dockerfilePath: ./server/Dockerfile
+    dockerCommand: node dist/cron/recalculateTrending.js
+    plan: starter
+    region: singapore
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
+        sync: false

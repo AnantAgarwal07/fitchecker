@@ -3,6 +3,7 @@ import { MOCK_POSTS } from '../data/mockPosts';
 import { MOCK_USERS, CURRENT_USER } from '../data/mockUsers';
 import { MOCK_SAVED_TRYONS, INITIAL_TRYON_RESULT, DEFAULT_SOURCE_PERSONA } from '../data/mockTryOns';
 import { MOCK_PRODUCTS } from '../data/mockProducts';
+import { api } from '../services/api';
 
 const AppContext = createContext();
 
@@ -120,6 +121,8 @@ export function AppProvider({ children }) {
         [id]: { liked: isLiked, count },
       };
     });
+    // Optimistic background sync with live API
+    api.toggleLike(id).catch(() => {});
   };
 
   const toggleBookmark = (id) => {

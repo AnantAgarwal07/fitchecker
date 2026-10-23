@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { TRENDING_CATEGORIES, MOCK_TRENDING_LOOKS } from '../data/mockTrending';
+import React, { useState, useEffect } from 'react';
+import { TRENDING_CATEGORIES } from '../data/mockTrending';
+import { api } from '../services/api';
 import TrendingReelCard from '../components/TrendingReelCard';
 import TryOnModal from '../components/TryOnModal';
 import OutfitDetailModal from '../components/OutfitDetailModal';
@@ -7,20 +8,28 @@ import './TrendingPage.css';
 
 export default function TrendingPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [looks, setLooks] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [isTryOnModalOpen, setIsTryOnModalOpen] = useState(false);
   const [selectedGarment, setSelectedGarment] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedLookForDetail, setSelectedLookForDetail] = useState(null);
 
-  const filteredLooks = MOCK_TRENDING_LOOKS.filter((look) => {
-    if (selectedCategory === 'all') return true;
-    return (
-      look.category.toLowerCase().includes(selectedCategory.toLowerCase()) ||
-      selectedCategory.toLowerCase().includes(look.category.toLowerCase())
-    );
-  });
-
-  const lookList = filteredLooks.length > 0 ? filteredLooks : MOCK_TRENDING_LOOKS;
+  useEffect(() => {
+    let isMounted = true;
+    async function loadTrending() {
+      setLoading(true);
+      const data = await api.getTrending({ category: selectedCategory });
+      if (isMounted) {
+        setLooks(data || []);
+        setLoading(false);
+      }
+    }
+    loadTrending();
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedCategory]);
 
   const handleOpenDetail = (look) => {
     setSelectedLookForDetail({
@@ -35,10 +44,10 @@ export default function TrendingPage() {
       image: look.image,
       fallbackImage: look.fallbackImage,
       source: {
-        name: look.creator.name,
-        handle: look.creator.handle,
-        avatar: look.creator.avatar,
-        isRetailer: look.creator.isRetailer,
+        name: look.creator?.name || 'Creator',
+        handle: look.creator?.handle || '@creator',
+        avatar: look.creator?.avatar,
+        isRetailer: look.creator?.isRetailer,
       },
       garments: look.garments,
     });
@@ -49,7 +58,7 @@ export default function TrendingPage() {
     const garment = look.defaultGarment || {
       id: look.id,
       name: look.title,
-      brand: look.creator.name,
+      brand: look.creator?.name || 'Brand',
       price: look.price || 250,
       image: look.image,
       collection: `${look.category ? look.category.toUpperCase() : 'TRENDING'} Runway Look`,
@@ -78,17 +87,26 @@ export default function TrendingPage() {
         ))}
       </div>
 
-      {/* Full-Screen Vertical Reels Container (Natural Swipe/Scroll between looks) */}
+      {/* Full-Screen Vertical Reels Container */}
       <div className="trending-reels-feed" id="trending-reels-feed">
-        {lookList.map((look, index) => (
-          <TrendingReelCard
-            key={look.id}
-            look={look}
-            index={index}
-            onOpenDetail={handleOpenDetail}
-            onOpenTryOn={handleOpenTryOn}
-          />
-        ))}
+        {loading && looks.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '60px 16px', color: 'var(--on-surface-variant)' }}>
+            <span className="material-symbols-outlined spin" style={{ fontSize: '32px', color: 'var(--primary)' }}>
+              progress_activity
+            </span>
+            <p style={{ marginTop: '12px', fontSize: '0.875rem' }}>Computing trending velocities...</p>
+          </div>
+        ) : (
+          looks.map((look, index) => (
+            <TrendingReelCard
+              key={look.id}
+              look={look}
+              index={index}
+              onOpenDetail={handleOpenDetail}
+              onOpenTryOn={handleOpenTryOn}
+            />
+          ))
+        )}
 
         {/* Feed footer notice */}
         <div className="trending-end-card">

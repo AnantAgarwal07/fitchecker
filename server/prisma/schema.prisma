@@ -1,0 +1,323 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Product {
+  id                Int            @id @default(autoincrement())
+  sourceProductId   String         @unique
+  brand             String?
+  name              String
+  description       String?
+  productUrl        String
+  currency          String         @default("INR")
+  originalPrice     Decimal?       @db.Decimal(12, 2)
+  currentPrice      Decimal?       @db.Decimal(12, 2)
+  discountPercent   Float?
+  rating            Float?
+  ratingsCount      Int?
+  sourceAudience    String?
+  audience          String?
+  audienceSource    String         @default("unknown")
+  sourceCategory    String?
+  category          String?
+  productType       String?
+  color             String?
+  pattern           String?
+  material          String?
+  occasion          String?
+  fit               String?
+  sleeveLength      String?
+  styleTags         String[]       @default([])
+  sizeChart         Json?
+  aiAttributes      Json?
+  aiModel           String?
+  aiConfidence      Float?
+  aiTaggedAt        DateTime?
+  rawBreadcrumbs    Json?
+  rawDetails        Json?
+  rawSpecifications Json?
+  rawSizes          Json?
+  rawData           Json
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  ProductImage      ProductImage[]
+  PostProduct       PostProduct[]
+  TryOnSession      TryOnSession[]
+  SavedItem         SavedItem[]
+  Interaction       Interaction[]
+
+  @@index([audience])
+  @@index([category])
+  @@index([currentPrice])
+  @@index([productType])
+  @@index([rating])
+  @@index([sourceCategory])
+}
+
+model ProductImage {
+  id        Int     @id @default(autoincrement())
+  productId Int
+  imageUrl  String
+  position  Int     @default(0)
+  altText   String?
+  Product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, imageUrl])
+  @@index([productId, position])
+}
+
+model User {
+  id               String         @id // Supabase auth.users UUID, Clerk user ID, or demo UUID
+  clerkId          String?        @unique
+  email            String         @unique
+  handle           String         @unique
+  name             String
+  avatarUrl        String?
+  bio              String?
+  location         String?
+  isRetailer       Boolean        @default(false)
+  verified         Boolean        @default(false)
+  consentPhotoAt   DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  bodyProfile      BodyProfile?
+  posts            Post[]
+  likes            PostLike[]
+  following        Follow[]       @relation("UserFollows")
+  followers        Follow[]       @relation("UserFollowedBy")
+  tryOnSessions    TryOnSession[]
+  userPhotos       UserPhoto[]
+  savedItems       SavedItem[]
+  interactions     Interaction[]
+
+  @@index([handle])
+  @@index([clerkId])
+}
+
+model UserPhoto {
+  id            String         @id @default(uuid())
+  userId        String
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  storageKey    String
+  createdAt     DateTime       @default(now())
+  deletedAt     DateTime?
+  tryOnSessions TryOnSession[]
+
+  @@index([userId])
+}
+
+model BodyProfile {
+  id               String         @id @default(uuid())
+  userId           String         @unique
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  heightCm         Float?
+  gender           String?
+  bodyType         String?
+  bustChestCm      Float?
+  chestCm          Float?
+  waistCm          Float?
+  hipsCm           Float?
+  inseamCm         Float?
+  shoulderCm       Float?
+  sleeveCm         Float?
+  weightKg         Float?
+  fitPreference    String?        @default("regular")
+  styleVibe        String?
+  source           String         @default("DEFAULT") // MANUAL | PHOTO | DEFAULT
+  confidence       Float          @default(1.0)
+  measuredAt       DateTime?
+  fullBodyPhotoUrl String?
+  landmarksJson    Json?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@index([userId])
+}
+
+model Post {
+  id               String           @id @default(uuid())
+  userId           String
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  caption          String?
+  imageUrl         String
+  fallbackImageUrl String?
+  category         String?
+  tags             String[]         @default([])
+  visibility       String           @default("PUBLIC") // PUBLIC | PRIVATE
+  price            Decimal?         @db.Decimal(12, 2)
+  rating           Float?           @default(4.5)
+  likesCount       Int              @default(0)
+  sharesCount      Int              @default(0)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  products         PostProduct[]
+  likes            PostLike[]
+  trendingMetrics  TrendingMetric[]
+  interactions     Interaction[]
+
+  @@index([userId])
+  @@index([category])
+  @@index([createdAt])
+  @@index([likesCount])
+}
+
+model PostProduct {
+  id          String   @id @default(uuid())
+  postId      String
+  post        Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  productId   Int
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  xPercent    Float?
+  yPercent    Float?
+  garmentType String?
+  createdAt   DateTime @default(now())
+
+  @@index([postId])
+  @@index([productId])
+}
+
+model PostLike {
+  id        String   @id @default(uuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([postId, userId])
+  @@index([userId])
+}
+
+model Follow {
+  id          String   @id @default(uuid())
+  followerId  String
+  follower    User     @relation("UserFollows", fields: [followerId], references: [id], onDelete: Cascade)
+  followingId String
+  following   User     @relation("UserFollowedBy", fields: [followingId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+}
+
+model TryOnSession {
+  id               String      @id @default(uuid())
+  userId           String
+  user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId        Int
+  product          Product     @relation(fields: [productId], references: [id], onDelete: Restrict)
+  userPhotoId      String?
+  userPhoto        UserPhoto?  @relation(fields: [userPhotoId], references: [id], onDelete: SetNull)
+  status           String      @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED
+  visibility       String      @default("PRIVATE") // PRIVATE | PUBLIC
+  mode             String      @default("demo") // live | demo
+  model            String?
+  inputPhotoUrl    String?
+  renderedImageUrl String?
+  fitScore         Float?
+  fitNote          String?
+  sizeSelected     String?
+  fitReport        Json?
+  fitDescriptor    String?
+  errorReason      String?
+  isSaved          Boolean     @default(false)
+  isPrivate        Boolean     @default(true)
+  metadata         Json?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  renderJobs       RenderJob[]
+
+  @@unique([userPhotoId, productId, sizeSelected, model])
+  @@index([userId])
+  @@index([productId])
+  @@index([status])
+  @@index([visibility])
+}
+
+model RenderJob {
+  id              String       @id @default(uuid())
+  tryOnSessionId  String
+  tryOnSession    TryOnSession @relation(fields: [tryOnSessionId], references: [id], onDelete: Cascade)
+  type            String       @default("TRYON") // TRYON | FEED_REFRESH
+  modelName       String       @default("gemini-2.5-flash-image")
+  status          String       @default("QUEUED") // QUEUED, PROCESSING, COMPLETED, FAILED
+  attempts        Int          @default(0)
+  maxAttempts     Int          @default(3)
+  lockedAt        DateTime?
+  lockedBy        String?
+  nextRunAt       DateTime?
+  lastError       String?
+  promptUsed      String?
+  errorMessage    String?
+  startedAt       DateTime?
+  completedAt     DateTime?
+  durationMs      Int?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@index([tryOnSessionId])
+  @@index([status])
+  @@index([nextRunAt])
+}
+
+model TrendingMetric {
+  id           String   @id @default(uuid())
+  postId       String
+  post         Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  score        Float    @default(0.0)
+  viewsCount   Int      @default(0)
+  likesCount   Int      @default(0)
+  sharesCount  Int      @default(0)
+  tryOnCount   Int      @default(0)
+  timeWindow   String   @default("24h")
+  calculatedAt DateTime @default(now())
+
+  @@index([postId])
+  @@index([score])
+  @@index([timeWindow])
+}
+
+model SavedItem {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+  @@index([userId])
+  @@index([productId])
+}
+
+model Interaction {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type         String   // VIEW, LIKE, UNLIKE, SAVE, UNSAVE, FOLLOW, TRYON, BUY_CLICK
+  productId    Int?
+  product      Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  postId       String?
+  post         Post?    @relation(fields: [postId], references: [id], onDelete: SetNull)
+  targetUserId String?
+  meta         Json?
+  createdAt    DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([type])
+}
+
+model FeedCache {
+  userId      String   @id
+  productIds  Int[]
+  generatedAt DateTime @default(now())
+  version     Int      @default(1)
+  source      String   @default("recommender")
+}

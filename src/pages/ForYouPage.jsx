@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_FOR_YOU } from '../data/mockForYou';
+import { api } from '../services/api';
 import { useApp } from '../context/AppContext';
 import ForYouCard from '../components/ForYouCard';
 import TryOnModal from '../components/TryOnModal';
@@ -11,21 +11,47 @@ export default function ForYouPage() {
   const navigate = useNavigate();
   const { searchQuery, showToast, setGarmentForTryOn } = useApp();
 
+  const [forYouData, setForYouData] = useState({
+    styleProfile: { matchScore: 96, traits: ['Hourglass Silhouette', 'Streetwear & Indie', 'Petite Proportion'] },
+    curatedGarments: [],
+    forYouFeed: [],
+  });
+  const [loading, setLoading] = useState(true);
+
   const [isTryOnModalOpen, setIsTryOnModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedOutfitForDetail, setSelectedOutfitForDetail] = useState(null);
-  const [selectedGarment, setSelectedGarment] = useState(MOCK_FOR_YOU.curatedGarments[0]);
+  const [selectedGarment, setSelectedGarment] = useState(null);
 
-  const { styleProfile, curatedGarments, forYouFeed } = MOCK_FOR_YOU;
+  useEffect(() => {
+    let isMounted = true;
+    async function loadForYou() {
+      setLoading(true);
+      const data = await api.getForYou({ userId: 'u-ananya-sharma-001' });
+      if (isMounted && data) {
+        setForYouData(data);
+        if (data.curatedGarments?.[0]) {
+          setSelectedGarment(data.curatedGarments[0]);
+        }
+        setLoading(false);
+      }
+    }
+    loadForYou();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const { styleProfile, curatedGarments, forYouFeed } = forYouData;
 
   // Filter feed if user types in search bar
   const filteredFeed = forYouFeed.filter((item) => {
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
     return (
-      item.name.toLowerCase().includes(q) ||
-      item.creator.name.toLowerCase().includes(q) ||
-      item.creator.handle.toLowerCase().includes(q) ||
+      item.name?.toLowerCase().includes(q) ||
+      item.creator?.name?.toLowerCase().includes(q) ||
+      item.creator?.handle?.toLowerCase().includes(q) ||
       (item.category && item.category.toLowerCase().includes(q)) ||
       (item.caption && item.caption.toLowerCase().includes(q)) ||
       (item.tags && item.tags.some((t) => t.toLowerCase().includes(q)))
@@ -45,10 +71,10 @@ export default function ForYouPage() {
       image: outfit.image,
       fallbackImage: outfit.fallbackImage,
       source: {
-        name: outfit.creator.name,
-        handle: outfit.creator.handle,
-        avatar: outfit.creator.avatar,
-        isRetailer: outfit.creator.isRetailer,
+        name: outfit.creator?.name || 'Stylist',
+        handle: outfit.creator?.handle || '@stylist',
+        avatar: outfit.creator?.avatar,
+        isRetailer: outfit.creator?.isRetailer,
       },
       caption: outfit.caption,
       garments: outfit.garments,
@@ -57,10 +83,10 @@ export default function ForYouPage() {
   };
 
   const handleOpenTryOn = (outfit) => {
-    const garment = {
+    const garment = outfit.defaultGarment || {
       id: outfit.id,
       name: outfit.name,
-      brand: outfit.creator.name,
+      brand: outfit.creator?.name || 'Fashion Curator',
       price: outfit.price || 190,
       image: outfit.image,
       collection: `${outfit.category ? outfit.category.toUpperCase() : 'FOR YOU'} Curation`,
@@ -75,14 +101,14 @@ export default function ForYouPage() {
       name: garment.name,
       category: garment.category || 'Curated Garment',
       price: garment.price,
-      rating: garment.rating,
+      rating: garment.rating || 4.7,
       reviewCount: garment.reviewCount || 95,
       availableSizes: garment.availableSizes || ['S', 'M', 'L'],
       shoppingUrl: garment.shoppingUrl,
       image: garment.image,
       source: {
-        name: garment.brand,
-        handle: `@${garment.brand.toLowerCase().replace(/\s+/g, '')}`,
+        name: garment.brand || 'Boutique',
+        handle: `@${(garment.brand || 'brand').toLowerCase().replace(/\s+/g, '')}`,
         isRetailer: true,
       },
     });
@@ -116,7 +142,7 @@ export default function ForYouPage() {
                 animation: 'pulseGlow 1.5s infinite',
               }}
             />
-            <span>{styleProfile.matchScore}% Match</span>
+            <span>{styleProfile?.matchScore || 96}% Match</span>
           </div>
         </div>
 
@@ -130,85 +156,100 @@ export default function ForYouPage() {
               tune
             </span>
             <p className="profile-banner-text">
-              <strong style={{ color: 'var(--on-surface)' }}>Style Profile:</strong> {styleProfile.traits.join(' · ')}
+              <strong style={{ color: 'var(--on-surface)' }}>Style Profile:</strong>{' '}
+              {Array.isArray(styleProfile?.traits) ? styleProfile.traits.join(' · ') : `${styleProfile?.bodyType || 'Hourglass'} · ${styleProfile?.styleVibe || 'Streetwear'} (${styleProfile?.heightCm || 165}cm)`}
             </p>
           </div>
           <button
             className="edit-profile-btn"
-            onClick={() => showToast('Style Quiz preferences refreshed!', 'refresh')}
+            onClick={() => {
+              navigate('/profile');
+              showToast('Edit your measurements in Body Profile', 'straighten');
+            }}
           >
             Edit
           </button>
         </div>
       </div>
 
-      {/* Curated Garments Carousel (PRESERVED FROM STITCH DESIGN) */}
-      <div className="curated-section">
-        <div className="section-title-row">
-          <h3 className="section-heading">Curated Garments</h3>
-          <span style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 600 }}>
-            Matched to Your Palette
-          </span>
-        </div>
+      {/* Curated Garments Carousel */}
+      {curatedGarments && curatedGarments.length > 0 && (
+        <div className="curated-section">
+          <div className="section-title-row">
+            <h3 className="section-heading">Curated Garments</h3>
+            <span style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 600 }}>
+              Matched to Your Palette
+            </span>
+          </div>
 
-        <div className="garments-carousel">
-          {curatedGarments.map((garment) => (
-            <div
-              key={garment.id}
-              className="garment-card"
-              onClick={() => handleCuratedGarmentClick(garment)}
-              title="Click for garment details"
-            >
-              <div className="garment-img-wrap">
-                <img
-                  src={garment.image}
-                  alt={garment.name}
-                  className="garment-img"
-                  onError={(e) => {
-                    e.currentTarget.src = 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=300&auto=format&fit=crop&q=80';
-                  }}
-                />
-                <span className="match-tag">{garment.tryOnMatch}</span>
-              </div>
-              <div className="garment-info">
-                <span className="garment-brand">{garment.brand}</span>
-                <span className="garment-name">{garment.name}</span>
-                <div className="garment-price-row">
-                  <span className="garment-price">${garment.price}</span>
-                  <button
-                    className="garment-try-btn"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleTryCuratedGarment(garment);
+          <div className="garments-carousel">
+            {curatedGarments.map((garment) => (
+              <div
+                key={garment.id}
+                className="garment-card"
+                onClick={() => handleCuratedGarmentClick(garment)}
+                title="Click for garment details"
+              >
+                <div className="garment-img-wrap">
+                  <img
+                    src={garment.image}
+                    alt={garment.name}
+                    className="garment-img"
+                    onError={(e) => {
+                      e.currentTarget.src = 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=300&auto=format&fit=crop&q=80';
                     }}
-                  >
-                    <span className="material-symbols-outlined" style={{ fontSize: '13px' }}>
-                      auto_awesome
-                    </span>
-                    <span>Try</span>
-                  </button>
+                  />
+                  <span className="match-tag">{garment.fitScore || garment.tryOnMatch || '95% Fit'}</span>
+                </div>
+                <div className="garment-info">
+                  <span className="garment-brand">{garment.brand}</span>
+                  <span className="garment-name">{garment.name}</span>
+                  <div className="garment-price-row">
+                    <span className="garment-price">₹{garment.price}</span>
+                    <button
+                      className="garment-try-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleTryCuratedGarment(garment);
+                      }}
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: '13px' }}>
+                        auto_awesome
+                      </span>
+                      <span>Try</span>
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Continuous Vertical Feed (Natural Instagram-style scrolling without buttons) */}
+      {/* Continuous Vertical Feed */}
       <div className="foryou-feed-container">
         <div className="foryou-feed-header">
           <h2 className="feed-title">Personalized Lookbook</h2>
           <span className="feed-subtitle">{filteredFeed.length} Curated Fits</span>
         </div>
 
-        {filteredFeed.map((outfit) => (
-          <ForYouCard
-            key={outfit.id}
-            outfit={outfit}
-            onOpenDetail={handleOpenDetailModal}
-            onOpenTryOn={handleOpenTryOn}
-          />
-        ))}
+        {loading && forYouFeed.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '48px 16px', color: 'var(--on-surface-variant)' }}>
+            <span className="material-symbols-outlined spin" style={{ fontSize: '32px', color: 'var(--primary)' }}>
+              progress_activity
+            </span>
+            <p style={{ marginTop: '12px', fontSize: '0.875rem' }}>Personalizing cuts to your measurements...</p>
+          </div>
+        ) : (
+          filteredFeed.map((outfit) => (
+            <ForYouCard
+              key={outfit.id}
+              outfit={outfit}
+              onOpenDetail={handleOpenDetailModal}
+              onOpenTryOn={handleOpenTryOn}
+            />
+          ))
+        )}
 
         {/* End of feed note */}
         <div style={{ textAlign: 'center', padding: '24px 16px', color: 'var(--on-surface-variant)' }}>

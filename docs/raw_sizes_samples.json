@@ -1,0 +1,4066 @@
+[
+  {
+    "id": 392,
+    "name": "Graphic Print Fitted Crop Top",
+    "category": "tops",
+    "productType": "crop top",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "XS",
+        "value": "32.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "XS",
+        "value": "14.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "S",
+        "value": "34.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "S",
+        "value": "15.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "M",
+        "value": "36.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "M",
+        "value": "15.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "L",
+        "value": "38.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "L",
+        "value": "16.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "XL",
+        "value": "40.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "XL",
+        "value": "16.5in",
+        "value_name": "Front Length"
+      }
+    ]
+  },
+  {
+    "id": 662,
+    "name": "Men Blue Slim Fit Checked Casual Shirt",
+    "category": "topwear",
+    "productType": "casual shirt",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "39",
+        "value": "41.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "39",
+        "value": "29.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "39",
+        "value": "17.13in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "39",
+        "value": "37.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "40",
+        "value": "43.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "40",
+        "value": "29.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "40",
+        "value": "17.88in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "40",
+        "value": "39.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "42",
+        "value": "45.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "42",
+        "value": "30.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "42",
+        "value": "18.63in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "42",
+        "value": "41.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "44",
+        "value": "47.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "44",
+        "value": "30.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "44",
+        "value": "19.38in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "44",
+        "value": "43.0in",
+        "value_name": "Waist"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Women's Red and Orange Printed Stretchable Blouse",
+    "category": "blouses",
+    "productType": "saree blouse",
+    "isTop": false,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "Onesize",
+        "value": "14.0in",
+        "value_name": "Front Length"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Red & Yellow Bandhani Gotta Patti Bandhani Saree",
+    "category": "sarees",
+    "productType": "bandhani saree",
+    "isTop": false,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": true,
+    "rawSizes": [
+      {
+        "size": "Onesize"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Women Blue & White Striped Peplum Top",
+    "category": "tops",
+    "productType": "peplum top",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "S",
+        "value": "33.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "S",
+        "value": "25.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "S",
+        "value": "30.5in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "M",
+        "value": "35.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "M",
+        "value": "25.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "M",
+        "value": "32.5in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "L",
+        "value": "38.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "L",
+        "value": "26.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "L",
+        "value": "35.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "XL",
+        "value": "40.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "XL",
+        "value": "26.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "XL",
+        "value": "36.5in",
+        "value_name": "To Fit Waist"
+      }
+    ]
+  },
+  {
+    "id": 664,
+    "name": "Men White Original Semi Sheer Casual Shirt",
+    "category": "topwear",
+    "productType": "casual shirt",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "38",
+        "value": "38.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "38",
+        "value": "27.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "38",
+        "value": "17.0in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "40",
+        "value": "40.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "40",
+        "value": "28.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "40",
+        "value": "17.5in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "42",
+        "value": "42.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "42",
+        "value": "28.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "42",
+        "value": "18.5in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "44",
+        "value": "44.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "44",
+        "value": "30.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "44",
+        "value": "19.75in",
+        "value_name": "Across Shoulder"
+      }
+    ]
+  },
+  {
+    "id": 319,
+    "name": "Advanced Fiberstrong Strengthening Sustainable Conditioner for Hair Fall - 196 g",
+    "category": "hair care",
+    "productType": "hair conditioner",
+    "isTop": false,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "90-100 ML"
+      },
+      {
+        "size": "190-200 ML"
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "name": "Cotton Lycra Denim A-Line Skirt",
+    "category": "skirts",
+    "productType": "a-line skirt",
+    "isTop": false,
+    "isBottom": true,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "26",
+        "value": "18.0in",
+        "value_name": "Skirt Length"
+      },
+      {
+        "size": "26",
+        "value": "26.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "28",
+        "value": "18.0in",
+        "value_name": "Skirt Length"
+      },
+      {
+        "size": "28",
+        "value": "28.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "30",
+        "value": "18.0in",
+        "value_name": "Skirt Length"
+      },
+      {
+        "size": "30",
+        "value": "30.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "32",
+        "value": "18.0in",
+        "value_name": "Skirt Length"
+      },
+      {
+        "size": "32",
+        "value": "32.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "34",
+        "value": "18.0in",
+        "value_name": "Skirt Length"
+      },
+      {
+        "size": "34",
+        "value": "34.0in",
+        "value_name": "To Fit Waist"
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "name": "Boys Mickey And Friends-Printed Cotton T-Shirt",
+    "category": "t-shirts",
+    "productType": "t-shirt",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "3-4Y",
+        "value": "25.98in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "3-4Y",
+        "value": "16.93in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "3-4Y",
+        "value": "11.18in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "3-4Y",
+        "value": "5.91in",
+        "value_name": "Sleeve-Length"
+      },
+      {
+        "size": "4-5Y",
+        "value": "27.17in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "4-5Y",
+        "value": "17.72in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "4-5Y",
+        "value": "11.73in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "4-5Y",
+        "value": "6.3in",
+        "value_name": "Sleeve-Length"
+      },
+      {
+        "size": "5-6Y",
+        "value": "28.35in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "5-6Y",
+        "value": "18.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "5-6Y",
+        "value": "12.28in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "5-6Y",
+        "value": "6.69in",
+        "value_name": "Sleeve-Length"
+      },
+      {
+        "size": "7-8Y",
+        "value": "31.5in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "7-8Y",
+        "value": "19.69in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "7-8Y",
+        "value": "13.07in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "7-8Y",
+        "value": "7.48in",
+        "value_name": "Sleeve-Length"
+      },
+      {
+        "size": "9-10Y",
+        "value": "33.07in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "9-10Y",
+        "value": "21.26in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "9-10Y",
+        "value": "13.86in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "9-10Y",
+        "value": "7.87in",
+        "value_name": "Sleeve-Length"
+      },
+      {
+        "size": "11-12Y",
+        "value": "34.65in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "11-12Y",
+        "value": "22.83in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "11-12Y",
+        "value": "14.65in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "11-12Y",
+        "value": "8.27in",
+        "value_name": "Sleeve-Length"
+      },
+      {
+        "size": "13-14Y",
+        "value": "36.22in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "13-14Y",
+        "value": "24.41in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "13-14Y",
+        "value": "15.43in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "13-14Y",
+        "value": "8.66in",
+        "value_name": "Sleeve-Length"
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "name": "Women Peach-Coloured Solid Flared Palazzos",
+    "category": "bottomwear",
+    "productType": "palazzos",
+    "isTop": false,
+    "isBottom": true,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "28",
+        "value": "28.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "30",
+        "value": "30.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "32",
+        "value": "32.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "34",
+        "value": "34.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "36",
+        "value": "36.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "38",
+        "value": "38.0in",
+        "value_name": "To Fit Waist"
+      }
+    ]
+  },
+  {
+    "id": 177,
+    "name": "Abstract Printed One Shoulder Top",
+    "category": "clothing",
+    "productType": "top",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "XS",
+        "value": "32.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "S",
+        "value": "34.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "M",
+        "value": "36.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "L",
+        "value": "38.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "XL",
+        "value": "40.0in",
+        "value_name": "To Fit Bust"
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "name": "Men Rust Thread Work Pathani Kurta",
+    "category": "topwear",
+    "productType": "kurta",
+    "isTop": false,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": true,
+    "rawSizes": [
+      {
+        "size": "S",
+        "value": "42.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "S",
+        "value": "29.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "S",
+        "value": "39.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "S",
+        "value": "44.5in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "S",
+        "value": "17.75in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "M",
+        "value": "44.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "M",
+        "value": "30.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "M",
+        "value": "41.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "M",
+        "value": "46.5in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "M",
+        "value": "18.25in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "L",
+        "value": "46.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "L",
+        "value": "30.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "L",
+        "value": "43.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "L",
+        "value": "48.5in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "L",
+        "value": "18.75in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "XL",
+        "value": "48.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "XL",
+        "value": "31.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "XL",
+        "value": "45.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "XL",
+        "value": "50.5in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "XL",
+        "value": "19.25in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "XXL",
+        "value": "50.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "XXL",
+        "value": "31.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "XXL",
+        "value": "47.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "XXL",
+        "value": "52.5in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "XXL",
+        "value": "19.75in",
+        "value_name": "Across Shoulder"
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "name": "Men Brown & Blue Pure Cotton Slim Fit Tartan Checks Casual Shirt",
+    "category": "topwear",
+    "productType": "shirt",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "38",
+        "value": "41.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "38",
+        "value": "30.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "38",
+        "value": "17.5in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "40",
+        "value": "44.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "40",
+        "value": "30.13in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "40",
+        "value": "18.5in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "42",
+        "value": "47.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "42",
+        "value": "31.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "42",
+        "value": "19.5in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "44",
+        "value": "50.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "44",
+        "value": "32.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "44",
+        "value": "20.5in",
+        "value_name": "Across Shoulder"
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "name": "Women Rose Gold-Toned Brass Dial & Bracelet Style Straps Analogue Watch 8174WM02",
+    "category": "accessories",
+    "productType": "watch",
+    "isTop": false,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "Onesize"
+      }
+    ]
+  },
+  {
+    "id": 394,
+    "name": "Pink & Mustard Yellow Linen Blend Printed Chanderi Saree",
+    "category": "sarees",
+    "productType": "saree",
+    "isTop": false,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": true,
+    "rawSizes": [
+      {
+        "size": "Onesize"
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "name": "Women Red & Black Printed Ethnic Palazzos Pack of 2",
+    "category": "bottomwear",
+    "productType": "palazzos",
+    "isTop": false,
+    "isBottom": true,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "Onesize",
+        "value": "34.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "Onesize",
+        "value": "38.0in",
+        "value_name": "Outseam Length"
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "name": "Men Black Slim Fit Horizontal Stripes Opaque Striped Casual Shirt",
+    "category": "apparel",
+    "productType": "shirt",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "39",
+        "value": "41.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "39",
+        "value": "29.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "39",
+        "value": "17.13in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "39",
+        "value": "37.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "40",
+        "value": "43.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "40",
+        "value": "29.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "40",
+        "value": "17.88in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "40",
+        "value": "39.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "42",
+        "value": "45.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "42",
+        "value": "30.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "42",
+        "value": "18.63in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "42",
+        "value": "41.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "44",
+        "value": "47.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "44",
+        "value": "30.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "44",
+        "value": "19.38in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "44",
+        "value": "43.0in",
+        "value_name": "Waist"
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "name": "Men Dark Brown Solid Slim Fit Cotton Formal Shirt",
+    "category": "apparel",
+    "productType": "shirt",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "38",
+        "value": "41.5in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "38",
+        "value": "30.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "38",
+        "value": "17.5in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "39",
+        "value": "42.5in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "39",
+        "value": "30.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "39",
+        "value": "18.0in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "40",
+        "value": "43.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "40",
+        "value": "30.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "40",
+        "value": "18.5in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "42",
+        "value": "45.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "42",
+        "value": "30.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "42",
+        "value": "19.0in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "44",
+        "value": "48.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "44",
+        "value": "31.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "44",
+        "value": "19.5in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "46",
+        "value": "51.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "46",
+        "value": "32.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "46",
+        "value": "20.5in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "48",
+        "value": "54.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "48",
+        "value": "32.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "48",
+        "value": "21.5in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "50",
+        "value": "64.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "50",
+        "value": "34.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "50",
+        "value": "25.0in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "52",
+        "value": "66.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "52",
+        "value": "35.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "52",
+        "value": "26.0in",
+        "value_name": "Across Shoulder"
+      }
+    ]
+  },
+  {
+    "id": 173,
+    "name": "Men White Original Grid Tattersall Checked Casual Shirt",
+    "category": "clothing",
+    "productType": "casual shirt",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "38",
+        "value": "38.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "38",
+        "value": "27.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "38",
+        "value": "17.0in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "40",
+        "value": "40.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "40",
+        "value": "28.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "40",
+        "value": "17.5in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "42",
+        "value": "42.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "42",
+        "value": "28.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "42",
+        "value": "18.5in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "44",
+        "value": "44.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "44",
+        "value": "30.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "44",
+        "value": "19.75in",
+        "value_name": "Across Shoulder"
+      }
+    ]
+  },
+  {
+    "id": 176,
+    "name": "Embellished Gathered Detail Fitted Crop Top",
+    "category": "clothing",
+    "productType": "crop top",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "XS",
+        "value": "28.0in",
+        "value_name": "Bust"
+      },
+      {
+        "size": "XS",
+        "value": "19.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "XS",
+        "value": "12.0in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "XS",
+        "value": "4.0in",
+        "value_name": "Sleeve-Length"
+      },
+      {
+        "size": "S",
+        "value": "30.0in",
+        "value_name": "Bust"
+      },
+      {
+        "size": "S",
+        "value": "19.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "S",
+        "value": "13.0in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "S",
+        "value": "5.0in",
+        "value_name": "Sleeve-Length"
+      },
+      {
+        "size": "M",
+        "value": "32.0in",
+        "value_name": "Bust"
+      },
+      {
+        "size": "M",
+        "value": "20.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "M",
+        "value": "13.0in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "M",
+        "value": "5.0in",
+        "value_name": "Sleeve-Length"
+      },
+      {
+        "size": "L",
+        "value": "34.0in",
+        "value_name": "Bust"
+      },
+      {
+        "size": "L",
+        "value": "20.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "L",
+        "value": "14.0in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "L",
+        "value": "5.0in",
+        "value_name": "Sleeve-Length"
+      },
+      {
+        "size": "XL",
+        "value": "36.0in",
+        "value_name": "Bust"
+      },
+      {
+        "size": "XL",
+        "value": "21.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "XL",
+        "value": "14.0in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "XL",
+        "value": "5.0in",
+        "value_name": "Sleeve-Length"
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "name": "Men Black & White Slim Fit Checked Casual Shirt",
+    "category": "apparel",
+    "productType": "shirt",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "39",
+        "value": "41.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "39",
+        "value": "25.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "39",
+        "value": "17.13in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "40",
+        "value": "43.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "40",
+        "value": "25.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "40",
+        "value": "17.88in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "42",
+        "value": "45.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "42",
+        "value": "26.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "42",
+        "value": "18.63in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "44",
+        "value": "47.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "44",
+        "value": "26.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "44",
+        "value": "19.38in",
+        "value_name": "Across Shoulder"
+      }
+    ]
+  },
+  {
+    "id": 22,
+    "name": "Green Keyhole Neck Wrap Crop Top",
+    "category": "tops",
+    "productType": "crop top",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "S",
+        "value": "34.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "S",
+        "value": "16.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "S",
+        "value": "26.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "M",
+        "value": "36.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "M",
+        "value": "16.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "M",
+        "value": "28.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "L",
+        "value": "38.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "L",
+        "value": "17.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "L",
+        "value": "30.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "XL",
+        "value": "40.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "XL",
+        "value": "17.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "XL",
+        "value": "32.0in",
+        "value_name": "To Fit Waist"
+      }
+    ]
+  },
+  {
+    "id": 28,
+    "name": "Women Pink & Golden Embroidered Silk Saree Blouse",
+    "category": "saree blouse",
+    "productType": "blouse",
+    "isTop": false,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": true,
+    "rawSizes": [
+      {
+        "size": "Onesize"
+      }
+    ]
+  },
+  {
+    "id": 180,
+    "name": "Duo Dlx 1800 Double Walled Thermosteel Hot & Cold Bottle With Bag- 1.8 L",
+    "category": "home & living",
+    "productType": "water bottle",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "1800-1900 ML"
+      }
+    ]
+  },
+  {
+    "id": 396,
+    "name": "Women Multicoloured Solid Henley Neck T-shirt",
+    "category": "tshirts",
+    "productType": "t-shirt",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "S",
+        "value": "32.0in",
+        "value_name": "Bust"
+      },
+      {
+        "size": "S",
+        "value": "24.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "M",
+        "value": "34.0in",
+        "value_name": "Bust"
+      },
+      {
+        "size": "M",
+        "value": "25.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "L",
+        "value": "36.0in",
+        "value_name": "Bust"
+      },
+      {
+        "size": "L",
+        "value": "26.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "XL",
+        "value": "38.0in",
+        "value_name": "Bust"
+      },
+      {
+        "size": "XL",
+        "value": "27.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "XXL",
+        "value": "40.0in",
+        "value_name": "Bust"
+      },
+      {
+        "size": "XXL",
+        "value": "28.0in",
+        "value_name": "Front Length"
+      }
+    ]
+  },
+  {
+    "id": 24,
+    "name": "A T U N Navy Blue Dress",
+    "category": "dresses",
+    "productType": "fit and flare dress",
+    "isTop": false,
+    "isBottom": false,
+    "isDress": true,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "0-3M",
+        "value": "16.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "0-3M",
+        "value": "13.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "0-3M",
+        "value": "19.0in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "0-3M",
+        "value": "7.0in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "0-3M",
+        "value": "17.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "3-6M",
+        "value": "17.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "3-6M",
+        "value": "14.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "3-6M",
+        "value": "20.0in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "3-6M",
+        "value": "7.0in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "3-6M",
+        "value": "18.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "6-12M",
+        "value": "18.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "6-12M",
+        "value": "15.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "6-12M",
+        "value": "21.0in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "6-12M",
+        "value": "7.0in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "6-12M",
+        "value": "19.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "1-2Y",
+        "value": "20.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "1-2Y",
+        "value": "16.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "1-2Y",
+        "value": "22.0in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "1-2Y",
+        "value": "7.5in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "1-2Y",
+        "value": "21.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "2-3Y",
+        "value": "21.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "2-3Y",
+        "value": "18.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "2-3Y",
+        "value": "23.0in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "2-3Y",
+        "value": "7.75in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "2-3Y",
+        "value": "22.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "3-4Y",
+        "value": "22.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "3-4Y",
+        "value": "20.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "3-4Y",
+        "value": "24.0in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "3-4Y",
+        "value": "7.75in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "3-4Y",
+        "value": "23.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "4-5Y",
+        "value": "23.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "4-5Y",
+        "value": "22.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "4-5Y",
+        "value": "25.0in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "4-5Y",
+        "value": "8.0in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "4-5Y",
+        "value": "24.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "5-6Y",
+        "value": "24.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "5-6Y",
+        "value": "24.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "5-6Y",
+        "value": "26.0in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "5-6Y",
+        "value": "8.0in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "5-6Y",
+        "value": "25.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "6-7Y",
+        "value": "25.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "6-7Y",
+        "value": "26.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "6-7Y",
+        "value": "27.0in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "6-7Y",
+        "value": "8.0in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "6-7Y",
+        "value": "26.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "7-8Y",
+        "value": "26.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "7-8Y",
+        "value": "28.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "7-8Y",
+        "value": "28.0in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "7-8Y",
+        "value": "9.25in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "7-8Y",
+        "value": "27.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "8-9Y",
+        "value": "27.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "8-9Y",
+        "value": "29.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "8-9Y",
+        "value": "29.0in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "8-9Y",
+        "value": "9.25in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "8-9Y",
+        "value": "28.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "9-10Y",
+        "value": "28.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "9-10Y",
+        "value": "31.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "9-10Y",
+        "value": "30.0in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "9-10Y",
+        "value": "9.5in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "9-10Y",
+        "value": "29.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "10-11Y",
+        "value": "29.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "10-11Y",
+        "value": "32.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "10-11Y",
+        "value": "31.0in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "10-11Y",
+        "value": "9.5in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "10-11Y",
+        "value": "30.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "11-12Y",
+        "value": "30.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "11-12Y",
+        "value": "33.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "11-12Y",
+        "value": "32.0in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "11-12Y",
+        "value": "9.5in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "11-12Y",
+        "value": "31.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "12-13Y",
+        "value": "31.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "12-13Y",
+        "value": "34.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "12-13Y",
+        "value": "33.0in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "12-13Y",
+        "value": "9.75in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "12-13Y",
+        "value": "32.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "13-14Y",
+        "value": "32.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "13-14Y",
+        "value": "35.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "13-14Y",
+        "value": "34.0in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "13-14Y",
+        "value": "9.75in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "13-14Y",
+        "value": "33.0in",
+        "value_name": "Chest"
+      }
+    ]
+  },
+  {
+    "id": 25,
+    "name": "Blue Ganesha With Feathers Hanging Dream Catcher",
+    "category": "home decor",
+    "productType": "dream catcher",
+    "isTop": false,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "Onesize"
+      }
+    ]
+  },
+  {
+    "id": 27,
+    "name": "Women Black Embroidered Saree Blouse",
+    "category": "saree blouse",
+    "productType": "blouse",
+    "isTop": false,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": true,
+    "rawSizes": [
+      {
+        "size": "Onesize",
+        "value": "15.5in",
+        "value_name": "Front Length"
+      }
+    ]
+  },
+  {
+    "id": 398,
+    "name": "Women Typography Printed Oversize Fit Pure Cotton T-shirt",
+    "category": "tshirts",
+    "productType": "t-shirt",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "XS",
+        "value": "38.0in",
+        "value_name": "Bust"
+      },
+      {
+        "size": "XS",
+        "value": "28.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "XS",
+        "value": "38.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "XS",
+        "value": "16.0in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "XS",
+        "value": "23.0in",
+        "value_name": "Sleeve-Length"
+      },
+      {
+        "size": "XS",
+        "value": "38.0in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "S",
+        "value": "40.0in",
+        "value_name": "Bust"
+      },
+      {
+        "size": "S",
+        "value": "28.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "S",
+        "value": "40.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "S",
+        "value": "16.75in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "S",
+        "value": "23.5in",
+        "value_name": "Sleeve-Length"
+      },
+      {
+        "size": "S",
+        "value": "40.0in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "M",
+        "value": "42.0in",
+        "value_name": "Bust"
+      },
+      {
+        "size": "M",
+        "value": "29.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "M",
+        "value": "42.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "M",
+        "value": "17.5in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "M",
+        "value": "24.0in",
+        "value_name": "Sleeve-Length"
+      },
+      {
+        "size": "M",
+        "value": "42.0in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "L",
+        "value": "44.0in",
+        "value_name": "Bust"
+      },
+      {
+        "size": "L",
+        "value": "29.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "L",
+        "value": "44.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "L",
+        "value": "18.5in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "L",
+        "value": "24.5in",
+        "value_name": "Sleeve-Length"
+      },
+      {
+        "size": "L",
+        "value": "44.0in",
+        "value_name": "Hips"
+      }
+    ]
+  },
+  {
+    "id": 185,
+    "name": "Boys Cotton Joggers",
+    "category": "track pants",
+    "productType": "joggers",
+    "isTop": false,
+    "isBottom": true,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "12-18M",
+        "value": "17.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "12-18M",
+        "value": "12.75in",
+        "value_name": "Inseam Length"
+      },
+      {
+        "size": "12-18M",
+        "value": "19.0in",
+        "value_name": "Outseam Length"
+      },
+      {
+        "size": "18-24M",
+        "value": "17.5in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "18-24M",
+        "value": "14.5in",
+        "value_name": "Inseam Length"
+      },
+      {
+        "size": "18-24M",
+        "value": "21.0in",
+        "value_name": "Outseam Length"
+      },
+      {
+        "size": "3-4Y",
+        "value": "18.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "3-4Y",
+        "value": "16.25in",
+        "value_name": "Inseam Length"
+      },
+      {
+        "size": "3-4Y",
+        "value": "23.0in",
+        "value_name": "Outseam Length"
+      },
+      {
+        "size": "4-5Y",
+        "value": "22.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "4-5Y",
+        "value": "17.75in",
+        "value_name": "Inseam Length"
+      },
+      {
+        "size": "4-5Y",
+        "value": "25.5in",
+        "value_name": "Outseam Length"
+      },
+      {
+        "size": "5-6Y",
+        "value": "23.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "5-6Y",
+        "value": "19.5in",
+        "value_name": "Inseam Length"
+      },
+      {
+        "size": "5-6Y",
+        "value": "27.5in",
+        "value_name": "Outseam Length"
+      },
+      {
+        "size": "6-7Y",
+        "value": "24.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "6-7Y",
+        "value": "21.25in",
+        "value_name": "Inseam Length"
+      },
+      {
+        "size": "6-7Y",
+        "value": "29.5in",
+        "value_name": "Outseam Length"
+      },
+      {
+        "size": "7-8Y",
+        "value": "25.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "7-8Y",
+        "value": "23.0in",
+        "value_name": "Inseam Length"
+      },
+      {
+        "size": "7-8Y",
+        "value": "31.5in",
+        "value_name": "Outseam Length"
+      },
+      {
+        "size": "8-9Y",
+        "value": "26.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "8-9Y",
+        "value": "24.75in",
+        "value_name": "Inseam Length"
+      },
+      {
+        "size": "8-9Y",
+        "value": "33.5in",
+        "value_name": "Outseam Length"
+      },
+      {
+        "size": "9-10Y",
+        "value": "27.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "9-10Y",
+        "value": "26.5in",
+        "value_name": "Inseam Length"
+      },
+      {
+        "size": "9-10Y",
+        "value": "35.5in",
+        "value_name": "Outseam Length"
+      },
+      {
+        "size": "11-12Y",
+        "value": "28.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "11-12Y",
+        "value": "28.13in",
+        "value_name": "Inseam Length"
+      },
+      {
+        "size": "11-12Y",
+        "value": "37.5in",
+        "value_name": "Outseam Length"
+      },
+      {
+        "size": "13-14Y",
+        "value": "29.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "13-14Y",
+        "value": "29.75in",
+        "value_name": "Inseam Length"
+      },
+      {
+        "size": "13-14Y",
+        "value": "39.5in",
+        "value_name": "Outseam Length"
+      },
+      {
+        "size": "15-16Y",
+        "value": "30.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "15-16Y",
+        "value": "31.5in",
+        "value_name": "Inseam Length"
+      },
+      {
+        "size": "15-16Y",
+        "value": "41.5in",
+        "value_name": "Outseam Length"
+      }
+    ]
+  },
+  {
+    "id": 30,
+    "name": "Black Couple On The Moon Wall Decor",
+    "category": "home decor",
+    "productType": "wall decor",
+    "isTop": false,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "Onesize"
+      }
+    ]
+  },
+  {
+    "id": 32,
+    "name": "Men Lavender Slim Fit Printed Casual Shirt",
+    "category": "apparel",
+    "productType": "casual shirt",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "39",
+        "value": "41.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "39",
+        "value": "29.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "39",
+        "value": "17.13in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "39",
+        "value": "37.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "40",
+        "value": "43.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "40",
+        "value": "29.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "40",
+        "value": "17.88in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "40",
+        "value": "39.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "42",
+        "value": "45.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "42",
+        "value": "30.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "42",
+        "value": "18.63in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "42",
+        "value": "41.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "44",
+        "value": "47.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "44",
+        "value": "30.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "44",
+        "value": "19.38in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "44",
+        "value": "43.0in",
+        "value_name": "Waist"
+      }
+    ]
+  },
+  {
+    "id": 42,
+    "name": "Women Beige V-Neck Casual Cotton T-shirt",
+    "category": "clothing",
+    "productType": "t-shirt",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "M",
+        "value": "42.0in",
+        "value_name": "Bust"
+      },
+      {
+        "size": "M",
+        "value": "27.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "L",
+        "value": "44.0in",
+        "value_name": "Bust"
+      },
+      {
+        "size": "L",
+        "value": "27.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "XL",
+        "value": "46.0in",
+        "value_name": "Bust"
+      },
+      {
+        "size": "XL",
+        "value": "28.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "XXL",
+        "value": "48.0in",
+        "value_name": "Bust"
+      },
+      {
+        "size": "XXL",
+        "value": "28.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "3XL",
+        "value": "50.0in",
+        "value_name": "Bust"
+      },
+      {
+        "size": "3XL",
+        "value": "29.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "4XL",
+        "value": "52.0in",
+        "value_name": "Bust"
+      },
+      {
+        "size": "4XL",
+        "value": "29.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "5XL",
+        "value": "54.0in",
+        "value_name": "Bust"
+      },
+      {
+        "size": "5XL",
+        "value": "30.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "6XL",
+        "value": "56.0in",
+        "value_name": "Bust"
+      },
+      {
+        "size": "6XL",
+        "value": "30.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "7XL",
+        "value": "58.0in",
+        "value_name": "Bust"
+      },
+      {
+        "size": "7XL",
+        "value": "31.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "8XL",
+        "value": "60.0in",
+        "value_name": "Bust"
+      },
+      {
+        "size": "8XL",
+        "value": "31.5in",
+        "value_name": "Front Length"
+      }
+    ]
+  },
+  {
+    "id": 400,
+    "name": "Women Pack of 2 Black & Red Printed Flared Palazzos",
+    "category": "palazzos",
+    "productType": "palazzos",
+    "isTop": false,
+    "isBottom": true,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "Onesize"
+      }
+    ]
+  },
+  {
+    "id": 34,
+    "name": "Men Leather Two Fold Wallet",
+    "category": "accessories",
+    "productType": "wallet",
+    "isTop": false,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "Onesize"
+      }
+    ]
+  },
+  {
+    "id": 35,
+    "name": "Men Black Striped Dobby Kurta",
+    "category": "apparel",
+    "productType": "kurta",
+    "isTop": false,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": true,
+    "rawSizes": [
+      {
+        "size": "S",
+        "value": "42.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "S",
+        "value": "41.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "S",
+        "value": "41.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "S",
+        "value": "43.0in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "S",
+        "value": "17.75in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "M",
+        "value": "44.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "M",
+        "value": "42.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "M",
+        "value": "43.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "M",
+        "value": "45.0in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "M",
+        "value": "18.25in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "L",
+        "value": "46.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "L",
+        "value": "42.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "L",
+        "value": "45.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "L",
+        "value": "47.0in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "L",
+        "value": "18.75in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "XL",
+        "value": "48.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "XL",
+        "value": "43.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "XL",
+        "value": "47.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "XL",
+        "value": "49.0in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "XL",
+        "value": "19.25in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "XXL",
+        "value": "50.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "XXL",
+        "value": "43.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "XXL",
+        "value": "49.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "XXL",
+        "value": "51.0in",
+        "value_name": "Hips"
+      },
+      {
+        "size": "XXL",
+        "value": "19.75in",
+        "value_name": "Across Shoulder"
+      }
+    ]
+  },
+  {
+    "id": 82,
+    "name": "Printed Drop-Shoulder Sleeves Pure Cotton Oversized Longline T-shirt",
+    "category": "topwear",
+    "productType": "t-shirt",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "XS",
+        "value": "32.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "XS",
+        "value": "28.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "XS",
+        "value": "26.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "S",
+        "value": "34.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "S",
+        "value": "29.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "S",
+        "value": "28.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "M",
+        "value": "36.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "M",
+        "value": "29.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "M",
+        "value": "30.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "L",
+        "value": "38.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "L",
+        "value": "30.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "L",
+        "value": "32.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "XL",
+        "value": "40.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "XL",
+        "value": "30.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "XL",
+        "value": "34.0in",
+        "value_name": "To Fit Waist"
+      }
+    ]
+  },
+  {
+    "id": 181,
+    "name": "Boys Typography Printed T-shirt",
+    "category": "t-shirts",
+    "productType": "t-shirt",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "2-3Y",
+        "value": "24.5in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "2-3Y",
+        "value": "16.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "2-3Y",
+        "value": "9.75in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "3-4Y",
+        "value": "26.5in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "3-4Y",
+        "value": "17.25in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "3-4Y",
+        "value": "10.45in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "5-6Y",
+        "value": "28.5in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "5-6Y",
+        "value": "18.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "5-6Y",
+        "value": "11.15in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "7-8Y",
+        "value": "30.5in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "7-8Y",
+        "value": "20.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "7-8Y",
+        "value": "11.85in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "9-10Y",
+        "value": "31.5in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "9-10Y",
+        "value": "21.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "9-10Y",
+        "value": "12.2in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "11-12Y",
+        "value": "32.5in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "11-12Y",
+        "value": "22.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "11-12Y",
+        "value": "12.55in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "13-14Y",
+        "value": "34.5in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "13-14Y",
+        "value": "24.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "13-14Y",
+        "value": "13.25in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "15-16Y",
+        "value": "36.5in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "15-16Y",
+        "value": "25.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "15-16Y",
+        "value": "13.95in",
+        "value_name": "Across Shoulder"
+      }
+    ]
+  },
+  {
+    "id": 38,
+    "name": "Men Black Dial & Croc Textured Leather Straps Analogue Watch TW0TG8000",
+    "category": "accessories",
+    "productType": "watch",
+    "isTop": false,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "Onesize"
+      }
+    ]
+  },
+  {
+    "id": 39,
+    "name": "Pink Solid Stainless Steel Water Bottle",
+    "category": "home",
+    "productType": "water bottle",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "500-550 ML"
+      }
+    ]
+  },
+  {
+    "id": 40,
+    "name": "Blue & Pink Motivational Quotes Wooden Wall Hangings",
+    "category": "home decor",
+    "productType": "wall hanging",
+    "isTop": false,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "Onesize"
+      }
+    ]
+  },
+  {
+    "id": 182,
+    "name": "Men Black Leather Two Fold Wallet",
+    "category": "wallets",
+    "productType": "two fold wallet",
+    "isTop": false,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "Onesize"
+      }
+    ]
+  },
+  {
+    "id": 44,
+    "name": "Men Rust Slim Fit Typography Printed Cotton Casual Shirt",
+    "category": "clothing",
+    "productType": "shirt",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "39",
+        "value": "41.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "39",
+        "value": "29.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "39",
+        "value": "17.13in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "39",
+        "value": "37.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "40",
+        "value": "43.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "40",
+        "value": "29.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "40",
+        "value": "17.88in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "40",
+        "value": "39.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "42",
+        "value": "45.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "42",
+        "value": "30.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "42",
+        "value": "18.63in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "42",
+        "value": "41.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "44",
+        "value": "47.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "44",
+        "value": "30.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "44",
+        "value": "19.38in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "44",
+        "value": "43.0in",
+        "value_name": "Waist"
+      }
+    ]
+  },
+  {
+    "id": 45,
+    "name": "Men White Slim Fit Printed Casual Shirt",
+    "category": "topwear",
+    "productType": "casual shirt",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "39",
+        "value": "41.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "39",
+        "value": "29.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "39",
+        "value": "17.13in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "39",
+        "value": "37.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "40",
+        "value": "43.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "40",
+        "value": "29.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "40",
+        "value": "17.88in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "40",
+        "value": "39.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "42",
+        "value": "45.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "42",
+        "value": "30.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "42",
+        "value": "18.63in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "42",
+        "value": "41.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "44",
+        "value": "47.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "44",
+        "value": "30.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "44",
+        "value": "19.38in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "44",
+        "value": "43.0in",
+        "value_name": "Waist"
+      }
+    ]
+  },
+  {
+    "id": 46,
+    "name": "Turquoise Blue & Black Motivational Quote MDF Woode Wall Hangings",
+    "category": "home decor",
+    "productType": "wall hanging",
+    "isTop": false,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "Onesize"
+      }
+    ]
+  },
+  {
+    "id": 47,
+    "name": "Men Green Slim Fit Printed Casual Shirt",
+    "category": "topwear",
+    "productType": "casual shirt",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "39",
+        "value": "41.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "39",
+        "value": "29.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "39",
+        "value": "17.13in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "39",
+        "value": "37.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "40",
+        "value": "43.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "40",
+        "value": "29.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "40",
+        "value": "17.88in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "40",
+        "value": "39.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "42",
+        "value": "45.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "42",
+        "value": "30.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "42",
+        "value": "18.63in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "42",
+        "value": "41.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "44",
+        "value": "47.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "44",
+        "value": "30.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "44",
+        "value": "19.38in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "44",
+        "value": "43.0in",
+        "value_name": "Waist"
+      }
+    ]
+  },
+  {
+    "id": 188,
+    "name": "Women Dinosaur Textured PU Two Fold Wallet",
+    "category": "wallets",
+    "productType": "two fold wallet",
+    "isTop": false,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "L"
+      }
+    ]
+  },
+  {
+    "id": 49,
+    "name": "Men Open Toe Slip On Comfort Sandals",
+    "category": "footwear",
+    "productType": "sandals",
+    "isTop": false,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "5",
+        "value": "25.0cm",
+        "value_name": "To Fit Foot Length"
+      },
+      {
+        "size": "6",
+        "value": "26.0cm",
+        "value_name": "To Fit Foot Length"
+      },
+      {
+        "size": "7",
+        "value": "26.5cm",
+        "value_name": "To Fit Foot Length"
+      },
+      {
+        "size": "8",
+        "value": "27.0cm",
+        "value_name": "To Fit Foot Length"
+      },
+      {
+        "size": "9",
+        "value": "28.0cm",
+        "value_name": "To Fit Foot Length"
+      },
+      {
+        "size": "10",
+        "value": "28.5cm",
+        "value_name": "To Fit Foot Length"
+      },
+      {
+        "size": "11",
+        "value": "29.0cm",
+        "value_name": "To Fit Foot Length"
+      }
+    ]
+  },
+  {
+    "id": 50,
+    "name": "Women Peach-Coloured & Gold-Toned Two Fold Wallet with Passport Holder",
+    "category": "accessories",
+    "productType": "wallet",
+    "isTop": false,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "Onesize"
+      }
+    ]
+  },
+  {
+    "id": 51,
+    "name": "Women Rose Gold Toned Stainless Steel Analogue Watch With Bracelet & Ring",
+    "category": "accessories",
+    "productType": "watch gift set",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "Onesize"
+      }
+    ]
+  },
+  {
+    "id": 52,
+    "name": "Floral Printed Square Neck Top",
+    "category": "topwear",
+    "productType": "top",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "XS",
+        "value": "32.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "XS",
+        "value": "23.62in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "XS",
+        "value": "32.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "S",
+        "value": "33.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "S",
+        "value": "24.02in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "S",
+        "value": "33.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "M",
+        "value": "35.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "M",
+        "value": "24.8in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "M",
+        "value": "35.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "L",
+        "value": "37.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "L",
+        "value": "25.59in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "L",
+        "value": "37.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "XL",
+        "value": "40.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "XL",
+        "value": "25.98in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "XL",
+        "value": "40.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "XXL",
+        "value": "43.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "XXL",
+        "value": "26.38in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "XXL",
+        "value": "43.0in",
+        "value_name": "To Fit Waist"
+      }
+    ]
+  },
+  {
+    "id": 406,
+    "name": "Women Pink & Navy Blue 2 Floral Printed Flared Knitted Ethnic Palazzos",
+    "category": "bottomwear",
+    "productType": "palazzos",
+    "isTop": false,
+    "isBottom": true,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "Onesize"
+      }
+    ]
+  },
+  {
+    "id": 189,
+    "name": "Plus Size Extended Sleeves Top",
+    "category": "tops",
+    "productType": "top",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "XXL",
+        "value": "44.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "XXL",
+        "value": "28.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "XXL",
+        "value": "42.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "3XL",
+        "value": "46.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "3XL",
+        "value": "28.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "3XL",
+        "value": "44.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "4XL",
+        "value": "48.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "4XL",
+        "value": "28.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "4XL",
+        "value": "46.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "5XL",
+        "value": "50.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "5XL",
+        "value": "28.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "5XL",
+        "value": "48.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "6XL",
+        "value": "52.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "6XL",
+        "value": "28.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "6XL",
+        "value": "50.0in",
+        "value_name": "To Fit Waist"
+      }
+    ]
+  },
+  {
+    "id": 382,
+    "name": "Men Brown Leather Solid Two Fold Wallet",
+    "category": "accessories",
+    "productType": "wallet",
+    "isTop": false,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "Onesize"
+      }
+    ]
+  },
+  {
+    "id": 54,
+    "name": "Men Vapour Slim Fit Low Distress Light Fade Stretchable Jeans",
+    "category": "jeans",
+    "productType": "jeans",
+    "isTop": false,
+    "isBottom": true,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "28",
+        "value": "28.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "28",
+        "value": "33.0in",
+        "value_name": "Inseam Length"
+      },
+      {
+        "size": "30",
+        "value": "30.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "30",
+        "value": "33.0in",
+        "value_name": "Inseam Length"
+      },
+      {
+        "size": "32",
+        "value": "32.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "32",
+        "value": "33.0in",
+        "value_name": "Inseam Length"
+      },
+      {
+        "size": "34",
+        "value": "34.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "34",
+        "value": "33.0in",
+        "value_name": "Inseam Length"
+      },
+      {
+        "size": "36",
+        "value": "36.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "36",
+        "value": "33.0in",
+        "value_name": "Inseam Length"
+      },
+      {
+        "size": "38",
+        "value": "38.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "38",
+        "value": "33.0in",
+        "value_name": "Inseam Length"
+      },
+      {
+        "size": "40",
+        "value": "40.0in",
+        "value_name": "To Fit Waist"
+      },
+      {
+        "size": "40",
+        "value": "33.0in",
+        "value_name": "Inseam Length"
+      }
+    ]
+  },
+  {
+    "id": 56,
+    "name": "Boys Graphic Printed Cotton T-shirt",
+    "category": "tshirts",
+    "productType": "t-shirt",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "9-12M",
+        "value": "22.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "9-12M",
+        "value": "13.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "9-12M",
+        "value": "9.5in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "12-18M",
+        "value": "23.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "12-18M",
+        "value": "14.25in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "12-18M",
+        "value": "10.0in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "18-24M",
+        "value": "24.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "18-24M",
+        "value": "15.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "18-24M",
+        "value": "10.5in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "3-4Y",
+        "value": "25.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "3-4Y",
+        "value": "16.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "3-4Y",
+        "value": "11.0in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "4-5Y",
+        "value": "27.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "4-5Y",
+        "value": "17.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "4-5Y",
+        "value": "12.0in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "5-6Y",
+        "value": "29.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "5-6Y",
+        "value": "19.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "5-6Y",
+        "value": "13.0in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "7-8Y",
+        "value": "31.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "7-8Y",
+        "value": "20.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "7-8Y",
+        "value": "14.0in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "9-10Y",
+        "value": "33.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "9-10Y",
+        "value": "22.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "9-10Y",
+        "value": "14.75in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "11-12Y",
+        "value": "35.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "11-12Y",
+        "value": "23.25in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "11-12Y",
+        "value": "15.25in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "13-14Y",
+        "value": "36.5in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "13-14Y",
+        "value": "24.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "13-14Y",
+        "value": "16.0in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "15-16Y",
+        "value": "38.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "15-16Y",
+        "value": "26.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "15-16Y",
+        "value": "16.75in",
+        "value_name": "Across Shoulder"
+      }
+    ]
+  },
+  {
+    "id": 408,
+    "name": "Women Multicoloured Brass Embellished Dial & Blue Leather Straps Analogue Watch DD 4111",
+    "category": "accessories",
+    "productType": "analogue watch",
+    "isTop": false,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "Onesize"
+      }
+    ]
+  },
+  {
+    "id": 59,
+    "name": "Maroon & Gold-Toned Woven Design Zari Silk Blend Kanjeevaram Saree",
+    "category": "sarees",
+    "productType": "saree",
+    "isTop": false,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": true,
+    "rawSizes": [
+      {
+        "size": "Onesize"
+      }
+    ]
+  },
+  {
+    "id": 60,
+    "name": "Men Brown Smart Opaque Formal Shirt",
+    "category": "shirts",
+    "productType": "formal shirt",
+    "isTop": true,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": false,
+    "rawSizes": [
+      {
+        "size": "36",
+        "value": "39.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "36",
+        "value": "28.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "36",
+        "value": "17.5in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "36",
+        "value": "39.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "36",
+        "value": "23.5in",
+        "value_name": "Sleeve-Length"
+      },
+      {
+        "size": "38",
+        "value": "41.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "38",
+        "value": "28.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "38",
+        "value": "18.0in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "38",
+        "value": "41.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "38",
+        "value": "24.0in",
+        "value_name": "Sleeve-Length"
+      },
+      {
+        "size": "40",
+        "value": "43.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "40",
+        "value": "29.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "40",
+        "value": "18.5in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "40",
+        "value": "43.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "40",
+        "value": "24.5in",
+        "value_name": "Sleeve-Length"
+      },
+      {
+        "size": "42",
+        "value": "45.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "42",
+        "value": "29.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "42",
+        "value": "19.0in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "42",
+        "value": "45.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "42",
+        "value": "25.0in",
+        "value_name": "Sleeve-Length"
+      },
+      {
+        "size": "44",
+        "value": "47.0in",
+        "value_name": "Chest"
+      },
+      {
+        "size": "44",
+        "value": "29.5in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "44",
+        "value": "20.0in",
+        "value_name": "Across Shoulder"
+      },
+      {
+        "size": "44",
+        "value": "47.0in",
+        "value_name": "Waist"
+      },
+      {
+        "size": "44",
+        "value": "25.5in",
+        "value_name": "Sleeve-Length"
+      }
+    ]
+  },
+  {
+    "id": 77,
+    "name": "Red Embellished Saree Blouse",
+    "category": "topwear",
+    "productType": "saree blouse",
+    "isTop": false,
+    "isBottom": false,
+    "isDress": false,
+    "isEthnic": true,
+    "rawSizes": [
+      {
+        "size": "S",
+        "value": "34.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "S",
+        "value": "15.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "M",
+        "value": "36.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "M",
+        "value": "15.0in",
+        "value_name": "Front Length"
+      },
+      {
+        "size": "L",
+        "value": "38.0in",
+        "value_name": "To Fit Bust"
+      },
+      {
+        "size": "L",
+        "value": "15.0in",
+        "value_name": "Front Length"
+      }
+    ]
+  }
+]
