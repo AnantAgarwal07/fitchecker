@@ -2,17 +2,69 @@ import { FastifyPluginAsync } from "fastify";
 import { z } from "zod";
 import { prisma } from "../db.js";
 import { requireAuth, requireOwnership, authenticateUser } from "../middleware/auth.js";
-import { invalidateUserFeedCache } from "../recommender/index.js";
+import { refreshUserFeed, invalidateUserFeedCache } from "../recommender/index.js";
 
-
-const DEFAULT_DEMO_USER_ID = "u-ananya-sharma-001";
 
 export const userRoutes: FastifyPluginAsync = async (fastify) => {
+  // GET /api/v1/users/me (Authenticated Current User with bodyProfile)
+  fastify.get("/api/v1/users/me", { preHandler: requireAuth }, async (request, reply) => {
+    const user = await prisma.user.findUnique({
+      where: { id: request.user!.id },
+      include: {
+        bodyProfile: true,
+        _count: {
+          select: {
+            posts: true,
+            followers: true,
+            following: true,
+            tryOnSessions: true,
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      return reply.status(404).send({ error: "User not found" });
+    }
+
+    const followersCount = user._count.followers;
+    const formattedFollowers =
+      followersCount > 1000 ? `${(followersCount / 1000).toFixed(1)}k` : `${followersCount}`;
+
+    return reply.status(200).send({
+      id: user.id,
+      clerkId: user.clerkId,
+      email: user.email,
+      name: user.name,
+      handle: user.handle.startsWith("@") ? user.handle : `@${user.handle}`,
+      avatar: user.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+      avatarUrl: user.avatarUrl,
+      bio: user.bio || "",
+      location: user.location || "Global",
+      badge: user.isRetailer ? "Official Brand" : "Virtual Stylist Tier I",
+      tier: "Virtual Stylist Tier I",
+      verified: user.verified,
+      isRetailer: user.isRetailer,
+      consentPhotoAt: user.consentPhotoAt,
+      stats: {
+        posts: user._count.posts,
+        followers: formattedFollowers,
+        following: user._count.following,
+        tryOns: user._count.tryOnSessions,
+      },
+      bodyProfile: user.bodyProfile || null,
+    });
+  });
+
   // GET /api/v1/users/:id
   fastify.get("/api/v1/users/:id", { preHandler: authenticateUser }, async (request, reply) => {
     const { id } = request.params as { id: string };
 
-    const effectiveId = id === "user-self" ? (request.user?.id || DEFAULT_DEMO_USER_ID) : id;
+    const effectiveId = (id === "user-self" || id === "me") ? request.user?.id : id;
+
+    if (!effectiveId) {
+      return reply.status(401).send({ error: "Unauthorized", message: "Authentication required to access self profile" });
+    }
 
     const user = await prisma.user.findFirst({
       where: {
@@ -44,12 +96,14 @@ export const userRoutes: FastifyPluginAsync = async (fastify) => {
       name: user.name,
       handle: user.handle.startsWith("@") ? user.handle : `@${user.handle}`,
       avatar: user.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+      avatarUrl: user.avatarUrl,
       bio: user.bio || "",
       location: user.location || "Global",
       badge: user.isRetailer ? "Official Brand" : "Virtual Stylist Tier I",
       tier: "Virtual Stylist Tier I",
       verified: user.verified,
       isRetailer: user.isRetailer,
+      consentPhotoAt: user.consentPhotoAt,
       stats: {
         posts: user._count.posts,
         followers: formattedFollowers,
@@ -66,7 +120,7 @@ export const userRoutes: FastifyPluginAsync = async (fastify) => {
     { preHandler: requireOwnership("id") },
     async (request, reply) => {
       const { id } = request.params as { id: string };
-      const effectiveId = id === "user-self" ? request.user!.id : id;
+      const effectiveId = (id === "user-self" || id === "me") ? request.user!.id : id;
 
       const ProfileSchema = z.object({
         heightCm: z.number().min(50).max(250).optional(),
@@ -106,9 +160,9 @@ export const userRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
 
-      // Invalidate FeedCache so fresh personalized recommendations are generated (Phase C3)
-      invalidateUserFeedCache(effectiveId).catch((err) =>
-        console.warn("Failed to invalidate feed cache:", err.message)
+      // Recompute and store fresh personalized recommendations immediately on body profile update (Phase 4)
+      refreshUserFeed(effectiveId).catch((err) =>
+        console.warn("Failed to refresh user feed cache:", err.message)
       );
 
       return reply.status(200).send({
@@ -145,10 +199,10 @@ export const userRoutes: FastifyPluginAsync = async (fastify) => {
     });
   });
 
-  // GET /api/v1/users/search (Phase C1: Search Creators & Stylists)
+  // GET /api/v1/users/search (Phase C1 & Phase 5: Search Creators & Stylists)
   fastify.get("/api/v1/users/search", async (request, reply) => {
     const QuerySchema = z.object({
-      q: z.string().min(1),
+      q: z.string().optional().default(""),
       limit: z.coerce.number().min(1).max(50).default(20),
     });
 
@@ -160,20 +214,24 @@ export const userRoutes: FastifyPluginAsync = async (fastify) => {
     const { q, limit } = parsed.data;
     const cleanQ = q.trim().replace("@", "");
 
+    const where: any = {};
+    if (cleanQ.length > 0) {
+      where.OR = [
+        { name: { contains: cleanQ, mode: "insensitive" } },
+        { handle: { contains: cleanQ, mode: "insensitive" } },
+        { bio: { contains: cleanQ, mode: "insensitive" } },
+      ];
+    }
+
     const users = await prisma.user.findMany({
-      where: {
-        OR: [
-          { name: { contains: cleanQ, mode: "insensitive" } },
-          { handle: { contains: cleanQ, mode: "insensitive" } },
-          { bio: { contains: cleanQ, mode: "insensitive" } },
-        ],
-      },
+      where,
       take: limit,
       include: {
         _count: {
           select: { posts: true, followers: true, following: true },
         },
       },
+      orderBy: cleanQ.length === 0 ? [{ followers: { _count: "desc" } }] : undefined,
     });
 
     return reply.status(200).send({
@@ -181,9 +239,10 @@ export const userRoutes: FastifyPluginAsync = async (fastify) => {
         id: u.id,
         name: u.name,
         handle: u.handle.startsWith("@") ? u.handle : `@${u.handle}`,
-        avatar: u.avatarUrl,
-        bio: u.bio,
-        location: u.location,
+        avatar: u.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+        avatarUrl: u.avatarUrl,
+        bio: u.bio || "",
+        location: u.location || "Global",
         verified: u.verified,
         isRetailer: u.isRetailer,
         postsCount: u._count.posts,

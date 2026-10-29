@@ -2,11 +2,19 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { useLongPress } from '../hooks/useLongPress';
+import { formatINR } from '../utils/currency';
+import CommentSheet from './CommentSheet';
+import '../pages/ForYouPage.css';
 
-export default function ForYouCard({ outfit, onOpenDetail, onOpenTryOn }) {
+export default function ForYouCard({ outfit, onOpenDetail, onOpenTryOn, onCardClick, onTryOnClick }) {
   const { likes, toggleLike, bookmarks, toggleBookmark, follows, toggleFollow, showToast } = useApp();
   const navigate = useNavigate();
   const [imgSrc, setImgSrc] = useState(outfit.image);
+  const [commentsOpen, setCommentsOpen] = useState(false);
+  const [commentCount, setCommentCount] = useState(outfit.commentCount || 0);
+
+  const handleDetail = onOpenDetail || onCardClick;
+  const handleTryOn = onOpenTryOn || onTryOnClick;
 
   const outfitLikes = likes[outfit.id] || { liked: false, count: outfit.likes || 3200 };
   const isBookmarked = !!bookmarks[outfit.id];
@@ -14,7 +22,7 @@ export default function ForYouCard({ outfit, onOpenDetail, onOpenTryOn }) {
 
   // Press & hold long press hook
   const longPressProps = useLongPress(() => {
-    onOpenDetail(outfit);
+    if (handleDetail) handleDetail(outfit);
   }, {
     threshold: 450,
     moveTolerance: 10,
@@ -37,7 +45,8 @@ export default function ForYouCard({ outfit, onOpenDetail, onOpenTryOn }) {
   };
 
   return (
-    <article className="foryou-post-card">
+    <>
+      <article className="foryou-post-card">
       {/* Header */}
       <div className="foryou-card-header">
         <div className="foryou-creator-info">
@@ -84,6 +93,7 @@ export default function ForYouCard({ outfit, onOpenDetail, onOpenTryOn }) {
             </span>
             <span>{isFollowing ? 'Following' : 'Follow'}</span>
           </button>
+
         ) : (
           <span
             style={{
@@ -128,7 +138,7 @@ export default function ForYouCard({ outfit, onOpenDetail, onOpenTryOn }) {
             className="foryou-details-pill"
             onClick={(e) => {
               e.stopPropagation();
-              onOpenDetail(outfit);
+              handleDetail?.(outfit);
             }}
           >
             <span className="material-symbols-outlined" style={{ fontSize: '15px', color: 'var(--secondary-fixed)' }}>
@@ -158,6 +168,11 @@ export default function ForYouCard({ outfit, onOpenDetail, onOpenTryOn }) {
             <span>{outfitLikes.count.toLocaleString()}</span>
           </button>
 
+          <button className="action-btn" onClick={() => setCommentsOpen(true)} aria-label="View comments">
+            <span className="material-symbols-outlined" style={{ fontSize: '23px' }}>chat_bubble</span>
+            {commentCount > 0 && <span>{commentCount}</span>}
+          </button>
+
           {/* Share */}
           <button className="action-btn" onClick={handleShare} aria-label="Share look">
             <span className="material-symbols-outlined" style={{ fontSize: '22px' }}>
@@ -170,7 +185,7 @@ export default function ForYouCard({ outfit, onOpenDetail, onOpenTryOn }) {
           {/* Try On Button */}
           <button
             className="try-on-cta-btn"
-            onClick={() => onOpenTryOn(outfit)}
+            onClick={() => handleTryOn?.(outfit)}
             aria-label="Try On Outfit"
           >
             <span className="material-symbols-outlined fill-1" style={{ fontSize: '17px', color: 'var(--secondary-fixed)' }}>
@@ -199,7 +214,7 @@ export default function ForYouCard({ outfit, onOpenDetail, onOpenTryOn }) {
             <div
               key={g.id}
               className="product-micro-card"
-              onClick={() => onOpenDetail(outfit)}
+              onClick={() => handleDetail?.(outfit)}
               title={`View ${g.name}`}
             >
               {g.image && (
@@ -213,7 +228,7 @@ export default function ForYouCard({ outfit, onOpenDetail, onOpenTryOn }) {
                 />
               )}
               <span className="product-micro-name">{g.name}</span>
-              <span className="product-micro-price">${g.price}</span>
+              <span className="product-micro-price">{formatINR(g.price)}</span>
             </div>
           ))}
         </div>
@@ -237,6 +252,8 @@ export default function ForYouCard({ outfit, onOpenDetail, onOpenTryOn }) {
 
         <span className="foryou-time">{outfit.timeAgo}</span>
       </div>
-    </article>
+      </article>
+      <CommentSheet postId={outfit.id} open={commentsOpen} onClose={() => setCommentsOpen(false)} initialCount={commentCount} onCountChange={setCommentCount} />
+    </>
   );
 }

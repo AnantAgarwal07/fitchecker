@@ -28,8 +28,13 @@ export const MOCK_POSTS = MOCK_OUTFITS.map((outfit, index) => ({
   price: outfit.price,
   rating: outfit.rating,
   availableSizes: outfit.availableSizes,
-  shoppingUrl: outfit.shoppingUrl,
-  garments: outfit.garments,
+  shoppingUrl: outfit.shoppingUrl || 'https://www.myntra.com',
+  shopUrl: outfit.shoppingUrl || 'https://www.myntra.com',
+  garments: (outfit.garments || []).map((g) => ({
+    ...g,
+    shopUrl: g.shopUrl || g.shoppingUrl || outfit.shoppingUrl || 'https://www.myntra.com',
+    shoppingUrl: g.shopUrl || g.shoppingUrl || outfit.shoppingUrl || 'https://www.myntra.com',
+  })),
   taggedCount: outfit.garments ? outfit.garments.length : 1,
   products: outfit.garments
     ? outfit.garments.map((g) => ({
@@ -38,6 +43,8 @@ export const MOCK_POSTS = MOCK_OUTFITS.map((outfit, index) => ({
         brand: g.brand,
         price: g.price,
         image: g.image || outfit.image,
+        shopUrl: g.shopUrl || g.shoppingUrl || outfit.shoppingUrl || 'https://www.myntra.com',
+        shoppingUrl: g.shopUrl || g.shoppingUrl || outfit.shoppingUrl || 'https://www.myntra.com',
       }))
     : [
         {
@@ -46,6 +53,8 @@ export const MOCK_POSTS = MOCK_OUTFITS.map((outfit, index) => ({
           brand: outfit.source.name,
           price: outfit.price,
           image: outfit.image,
+          shopUrl: outfit.shoppingUrl || 'https://www.myntra.com',
+          shoppingUrl: outfit.shoppingUrl || 'https://www.myntra.com',
         },
       ],
 }));

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { UserButton } from '@clerk/clerk-react';
 import APP_CONFIG from '../data/appConfig';
 import { useApp } from '../context/AppContext';
+import SearchResultsView from './SearchResultsView';
 import './AppHeader.css';
 
 export default function AppHeader({ title, backButton = false }) {
@@ -67,44 +69,73 @@ export default function AppHeader({ title, backButton = false }) {
             {unreadNotifications && <span className="unread-dot"></span>}
           </button>
 
-          <Link to="/profile" aria-label="Go to profile">
-            <img
-              src={currentUser.avatar}
-              alt="Profile"
-              className="header-avatar"
+          <div style={{ marginLeft: 6, display: 'flex', alignItems: 'center' }}>
+            <UserButton
+              afterSignOutUrl="/sign-in"
+              appearance={{
+                elements: {
+                  avatarBox: {
+                    width: '32px',
+                    height: '32px',
+                    border: '1.5px solid #d4af37',
+                  },
+                },
+              }}
             />
-          </Link>
+          </div>
         </div>
       </header>
 
-      {/* Interactive Quick Search Bar */}
+      {/* Interactive Quick Search Bar & Results Modal */}
       {isSearchOpen && (
-        <div className="search-overlay">
-          <div className="search-input-wrap">
-            <span className="material-symbols-outlined" style={{ color: 'var(--primary)', fontSize: '20px' }}>
-              search
-            </span>
-            <input
-              type="text"
-              placeholder="Search garments, styles, designers (e.g., COS, Trench)..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              autoFocus
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex' }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'var(--outline)' }}>
-                  close
+        <div className="search-backdrop" onClick={() => setIsSearchOpen(false)}>
+          <div className="search-overlay" onClick={(e) => e.stopPropagation()}>
+            <div className="search-input-header">
+              <div className="search-input-wrap">
+                <span className="material-symbols-outlined" style={{ color: 'var(--primary)', fontSize: '20px' }}>
+                  search
                 </span>
+                <input
+                  type="text"
+                  placeholder="Search garments, styles, designers (e.g., COS, Trench)..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  autoFocus
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex' }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'var(--outline)' }}>
+                      close
+                    </span>
+                  </button>
+                )}
+              </div>
+              <button
+                className="search-close-btn"
+                onClick={() => {
+                  setIsSearchOpen(false);
+                  setSearchQuery('');
+                }}
+              >
+                Cancel
               </button>
-            )}
+            </div>
+
+            <SearchResultsView
+              onClose={() => setIsSearchOpen(false)}
+              onSelectLook={(look) => {
+                setIsSearchOpen(false);
+                navigate('/');
+              }}
+              onSelectProduct={(product) => {
+                setIsSearchOpen(false);
+                navigate(`/try-on?productId=${product.id}`);
+              }}
+            />
           </div>
-          <button className="search-close-btn" onClick={() => setIsSearchOpen(false)}>
-            Cancel
-          </button>
         </div>
       )}
     </>

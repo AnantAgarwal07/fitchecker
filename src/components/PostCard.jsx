@@ -4,6 +4,8 @@ import { useApp } from '../context/AppContext';
 import { useLongPress } from '../hooks/useLongPress';
 import TryOnModal from './TryOnModal';
 import OutfitDetailModal from './OutfitDetailModal';
+import { formatINR } from '../utils/currency';
+import CommentSheet from './CommentSheet';
 import './PostCard.css';
 
 export default function PostCard({ post }) {
@@ -15,6 +17,8 @@ export default function PostCard({ post }) {
   const [selectedGarment, setSelectedGarment] = useState(post.products?.[0] || null);
   const [showFullCaption, setShowFullCaption] = useState(false);
   const [imgSrc, setImgSrc] = useState(post.image);
+  const [commentsOpen, setCommentsOpen] = useState(false);
+  const [commentCount, setCommentCount] = useState(post.commentCount || 0);
 
   const postLikes = likes[post.id] || { liked: false, count: post.likes || 1200 };
   const isBookmarked = !!bookmarks[post.id];
@@ -45,17 +49,27 @@ export default function PostCard({ post }) {
   };
 
   const handleQuickTryOn = (product) => {
-    setSelectedGarment(product || post.products?.[0]);
+    const rawProd = product || post.products?.[0];
+    const targetUrl = rawProd?.shopUrl || rawProd?.shoppingUrl || post.shoppingUrl || post.shopUrl || 'https://www.myntra.com';
+    setSelectedGarment(rawProd ? { ...rawProd, shopUrl: targetUrl, shoppingUrl: targetUrl } : null);
     setIsTryOnModalOpen(true);
   };
 
   const handleOpenFittingRoomDirectly = () => {
-    const target = selectedGarment || post.products?.[0] || {
+    const rawTarget = selectedGarment || post.products?.[0];
+    const targetUrl = rawTarget?.shopUrl || rawTarget?.shoppingUrl || post.shoppingUrl || post.shopUrl || 'https://www.myntra.com';
+    const target = rawTarget ? {
+      ...rawTarget,
+      shopUrl: targetUrl,
+      shoppingUrl: targetUrl,
+    } : {
       id: `prod-${post.id}`,
       name: post.alt || 'Featured Outfit',
       brand: post.user.name,
       price: post.price || 190,
       image: post.image,
+      shopUrl: targetUrl,
+      shoppingUrl: targetUrl,
     };
     setGarmentForTryOn(target);
     navigate('/try-on');
@@ -169,7 +183,7 @@ export default function PostCard({ post }) {
           </div>
         </div>
 
-        {/* Action Bar (Balanced layout without comments UI) */}
+        {/* Action Bar */}
         <div className="post-action-bar">
           <div className="action-bar-left">
             {/* Like Button */}
@@ -182,6 +196,11 @@ export default function PostCard({ post }) {
                 favorite
               </span>
               <span>{postLikes.count.toLocaleString()}</span>
+            </button>
+
+            <button className="action-btn" onClick={() => setCommentsOpen(true)} aria-label="View comments">
+              <span className="material-symbols-outlined" style={{ fontSize: '23px' }}>chat_bubble</span>
+              {commentCount > 0 && <span>{commentCount}</span>}
             </button>
 
             {/* Share Button */}
@@ -239,7 +258,7 @@ export default function PostCard({ post }) {
                   />
                 )}
                 <span className="product-micro-name">{prod.name}</span>
-                {prod.price && <span className="product-micro-price">${prod.price}</span>}
+                {prod.price && <span className="product-micro-price">{formatINR(prod.price)}</span>}
               </div>
             ))}
           </div>
@@ -286,7 +305,8 @@ export default function PostCard({ post }) {
           rating: post.rating || 4.8,
           reviewCount: post.reviewCount || 110,
           availableSizes: post.availableSizes || ['S', 'M', 'L'],
-          shoppingUrl: post.shoppingUrl,
+          shoppingUrl: post.shoppingUrl || post.shopUrl || post.products?.[0]?.shopUrl || 'https://www.myntra.com',
+          shopUrl: post.shopUrl || post.shoppingUrl || post.products?.[0]?.shopUrl || 'https://www.myntra.com',
           image: imgSrc || post.image,
           fallbackImage: post.fallbackImage,
           source: {
@@ -296,7 +316,8 @@ export default function PostCard({ post }) {
             isRetailer: post.user.isRetailer,
           },
           caption: post.caption,
-          garments: post.garments,
+          garments: post.garments || post.products,
+          products: post.products,
         }}
       />
 
@@ -306,6 +327,7 @@ export default function PostCard({ post }) {
         onClose={() => setIsTryOnModalOpen(false)}
         garment={selectedGarment}
       />
+      <CommentSheet postId={post.id} open={commentsOpen} onClose={() => setCommentsOpen(false)} initialCount={commentCount} onCountChange={setCommentCount} />
     </>
   );
 }

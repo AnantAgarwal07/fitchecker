@@ -287,6 +287,9 @@ describe("Phase C: Social Features, Interactions & Recommender Engine Test Suite
       const res = await app.inject({
         method: "GET",
         url: `/api/v1/for-you?userId=${testUserId}`,
+        headers: {
+          authorization: `Bearer test-token-${testUserId}`,
+        },
       });
 
       expect(res.statusCode).toBe(200);

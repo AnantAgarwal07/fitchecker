@@ -178,6 +178,7 @@ model PostProduct {
   garmentType String?
   createdAt   DateTime @default(now())
 
+  @@unique([postId, productId])
   @@index([postId])
   @@index([productId])
 }
@@ -315,9 +316,11 @@ model Interaction {
 }
 
 model FeedCache {
-  userId      String   @id
-  productIds  Int[]
+  userId      String
+  category    String   @default("all")
+  items       Json     // [{ postId, score, fitNote }]
   generatedAt DateTime @default(now())
-  version     Int      @default(1)
-  source      String   @default("recommender")
+
+  @@id([userId, category])
 }
+

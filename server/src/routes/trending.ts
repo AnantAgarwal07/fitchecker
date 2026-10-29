@@ -7,6 +7,7 @@ export const trendingRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get("/api/v1/trending", async (request, reply) => {
     const QuerySchema = z.object({
       category: z.string().optional(),
+      q: z.string().optional(),
       limit: z.coerce.number().min(1).max(50).default(20),
     });
 
@@ -15,11 +16,47 @@ export const trendingRoutes: FastifyPluginAsync = async (fastify) => {
       return reply.status(400).send({ error: parsed.error.format() });
     }
 
-    const { category, limit } = parsed.data;
+    const { category, q, limit } = parsed.data;
 
     const where: any = {};
     if (category && category !== "all") {
       where.category = { equals: category, mode: "insensitive" };
+    }
+
+    // Full search across caption, tags, category, creator, and products (Phase 5)
+    if (q && q.trim().length > 0) {
+      const searchTrimmed = q.trim();
+      const searchLower = searchTrimmed.toLowerCase();
+      const searchUpper = searchTrimmed.toUpperCase();
+      const searchCaps = searchTrimmed.charAt(0).toUpperCase() + searchTrimmed.slice(1).toLowerCase();
+
+      const searchFilter = {
+        OR: [
+          { caption: { contains: searchTrimmed, mode: "insensitive" } },
+          { category: { contains: searchTrimmed, mode: "insensitive" } },
+          { tags: { hasSome: [searchTrimmed, searchLower, searchUpper, searchCaps] } },
+          { user: { name: { contains: searchTrimmed, mode: "insensitive" } } },
+          { user: { handle: { contains: searchTrimmed, mode: "insensitive" } } },
+          {
+            products: {
+              some: {
+                product: {
+                  OR: [
+                    { name: { contains: searchTrimmed, mode: "insensitive" } },
+                    { brand: { contains: searchTrimmed, mode: "insensitive" } },
+                  ],
+                },
+              },
+            },
+          },
+        ],
+      };
+
+      if (!where.AND) {
+        where.AND = [searchFilter];
+      } else {
+        where.AND.push(searchFilter);
+      }
     }
 
     const posts = await prisma.post.findMany({
@@ -46,7 +83,10 @@ export const trendingRoutes: FastifyPluginAsync = async (fastify) => {
       },
     });
 
-    // Score dynamically using calculateTrendingVelocity
+    // Check if any posts have actual trending metric records
+    const hasMetrics = posts.some((p) => p.trendingMetrics && p.trendingMetrics.length > 0);
+
+    // Score posts
     const scoredPosts = posts.map((post) => {
       const metric = post.trendingMetrics[0];
       const velocityScore = calculateTrendingVelocity({
@@ -63,21 +103,39 @@ export const trendingRoutes: FastifyPluginAsync = async (fastify) => {
       };
     });
 
-    // Sort descending by velocity score
-    scoredPosts.sort((a, b) => b.velocityScore - a.velocityScore);
+    if (hasMetrics) {
+      // Sort descending by velocity score
+      scoredPosts.sort((a, b) => b.velocityScore - a.velocityScore);
+    } else {
+      // If there are no TrendingMetric rows, rank by likes and recency
+      scoredPosts.sort((a, b) => {
+        if (b.post.likesCount !== a.post.likesCount) {
+          return b.post.likesCount - a.post.likesCount;
+        }
+        return new Date(b.post.createdAt).getTime() - new Date(a.post.createdAt).getTime();
+      });
+    }
+
     const topScored = scoredPosts.slice(0, limit);
 
     // Format response to match frontend TrendingReelCard expectations
     const trendingLooks = topScored.map(({ post, velocityScore }, index) => {
-      const garments = (post.products || []).map((pp) => ({
-        id: pp.product.id,
-        name: pp.product.name,
-        brand: pp.product.brand || "Brand",
-        price: Number(pp.product.currentPrice) || Number(post.price) || 0,
-        image: pp.product.ProductImage[0]?.imageUrl || post.imageUrl,
-        category: pp.product.category,
-        shopUrl: pp.product.productUrl,
-      }));
+      const garments = (post.products || []).map((pp) => {
+        const itemUrl = pp.product.productUrl || "https://www.myntra.com";
+        return {
+          id: pp.product.id,
+          name: pp.product.name,
+          brand: pp.product.brand || "Brand",
+          price: Number(pp.product.currentPrice) || Number(post.price) || 0,
+          image: pp.product.ProductImage[0]?.imageUrl || post.imageUrl,
+          category: pp.product.category,
+          shopUrl: itemUrl,
+          shoppingUrl: itemUrl,
+          productUrl: itemUrl,
+        };
+      });
+
+      const primaryUrl = garments[0]?.shopUrl || "https://www.myntra.com";
 
       const defaultGarment = garments[0] || {
         id: `prod-${post.id}`,
@@ -85,7 +143,9 @@ export const trendingRoutes: FastifyPluginAsync = async (fastify) => {
         brand: post.user.name,
         price: Number(post.price) || 0,
         image: post.imageUrl,
-        shopUrl: "https://www.myntra.com",
+        shopUrl: primaryUrl,
+        shoppingUrl: primaryUrl,
+        productUrl: primaryUrl,
       };
 
       return {
@@ -117,6 +177,8 @@ export const trendingRoutes: FastifyPluginAsync = async (fastify) => {
         velocityScore,
         garments,
         defaultGarment,
+        shoppingUrl: primaryUrl,
+        shopUrl: primaryUrl,
       };
     });
 

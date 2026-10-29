@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { formatINR } from '../utils/currency';
 import './OutfitDetailModal.css';
 
 export default function OutfitDetailModal({ isOpen, onClose, outfit }) {
@@ -19,25 +20,47 @@ export default function OutfitDetailModal({ isOpen, onClose, outfit }) {
     }
   };
 
-  const handleBuy = () => {
-    if (outfit.shoppingUrl) {
-      window.open(outfit.shoppingUrl, '_blank', 'noopener,noreferrer');
-      showToast(`Opening ${outfit.source?.name || 'Retailer'} storefront...`, 'shopping_bag');
-    } else {
-      showToast(`Catalog order initialized for ${outfit.name}`, 'shopping_cart_checkout');
-    }
+  const getOutfitShopUrl = () => {
+    return (
+      outfit.shoppingUrl ||
+      outfit.shopUrl ||
+      outfit.productUrl ||
+      outfit.products?.[0]?.shopUrl ||
+      outfit.products?.[0]?.shoppingUrl ||
+      outfit.products?.[0]?.productUrl ||
+      outfit.garments?.[0]?.shopUrl ||
+      outfit.garments?.[0]?.shoppingUrl ||
+      outfit.garments?.[0]?.productUrl ||
+      outfit.defaultGarment?.shopUrl ||
+      'https://www.myntra.com'
+    );
   };
 
-  const handleTryOn = () => {
-    const garment = {
+  const handleBuy = (targetUrl, label) => {
+    const url = targetUrl || getOutfitShopUrl();
+    window.open(url, '_blank', 'noopener,noreferrer');
+    showToast(`Opening ${label || outfit.source?.name || 'storefront'}...`, 'shopping_bag');
+  };
+
+  const handleTryOn = (piece) => {
+    const targetGarment = piece ? {
+      id: piece.id || `prod-${Date.now()}`,
+      name: piece.name,
+      brand: piece.brand || outfit.source?.name || 'Curated Garment',
+      price: piece.price || outfit.price || 190,
+      image: piece.image || outfit.image,
+      shopUrl: piece.shopUrl || piece.shoppingUrl || piece.productUrl || getOutfitShopUrl(),
+      collection: outfit.category ? `${outfit.category.toUpperCase()} Piece` : 'Curated Garment',
+    } : {
       id: outfit.id || `prod-${Date.now()}`,
       name: outfit.name,
       brand: outfit.source?.name || 'Curated Outfit',
       price: outfit.price || 190,
       image: outfit.image,
+      shopUrl: getOutfitShopUrl(),
       collection: outfit.category ? `${outfit.category.toUpperCase()} Collection` : 'Featured Look',
     };
-    setGarmentForTryOn(garment);
+    setGarmentForTryOn(targetGarment);
     onClose();
     navigate('/try-on');
   };
@@ -76,7 +99,7 @@ export default function OutfitDetailModal({ isOpen, onClose, outfit }) {
               className="modal-media-img"
               onError={handleImageError}
             />
-            {outfit.price && <div className="modal-price-pill">${outfit.price}</div>}
+          {outfit.price && <div className="modal-price-pill">{formatINR(outfit.price)}</div>}
           </div>
 
           {/* Title & Source */}
@@ -127,20 +150,56 @@ export default function OutfitDetailModal({ isOpen, onClose, outfit }) {
                 Included Pieces ({outfit.garments.length})
               </span>
 
-              {outfit.garments.map((g) => (
-                <div key={g.id} className="curated-piece-row">
-                  <div className="piece-left">
-                    {g.image && (
-                      <img src={g.image} alt={g.name} className="piece-thumb" onError={handleImageError} />
-                    )}
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <span className="piece-name">{g.name}</span>
-                      <span className="piece-brand">{g.brand}</span>
+              {outfit.garments.map((g) => {
+                const itemShopUrl = g.shopUrl || g.shoppingUrl || g.productUrl || getOutfitShopUrl();
+                return (
+                  <div
+                    key={g.id}
+                    className="curated-piece-row"
+                    onClick={() => handleBuy(itemShopUrl, g.brand || g.name)}
+                    title={`Click to open ${g.name} on storefront`}
+                  >
+                    <div className="piece-left">
+                      {g.image && (
+                        <img src={g.image} alt={g.name} className="piece-thumb" onError={handleImageError} />
+                      )}
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <span className="piece-name">{g.name}</span>
+                        <span className="piece-brand">{g.brand}</span>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span className="piece-price">{formatINR(g.price)}</span>
+                      <button
+                        className="piece-action-icon-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleTryOn(g);
+                        }}
+                        title={`Virtually try on ${g.name}`}
+                        aria-label={`Try on ${g.name}`}
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+                          checkroom
+                        </span>
+                      </button>
+                      <button
+                        className="piece-action-icon-btn primary"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleBuy(itemShopUrl, g.brand || g.name);
+                        }}
+                        title={`Open link to ${g.name}`}
+                        aria-label={`Open link to ${g.name}`}
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+                          open_in_new
+                        </span>
+                      </button>
                     </div>
                   </div>
-                  <span className="piece-price">${g.price}</span>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
 
@@ -155,14 +214,14 @@ export default function OutfitDetailModal({ isOpen, onClose, outfit }) {
         {/* Modal Actions Footer */}
         <div className="outfit-modal-actions">
           <div className="modal-btn-row">
-            <button className="modal-main-btn btn-tryon-accent" onClick={handleTryOn}>
+            <button className="modal-main-btn btn-tryon-accent" onClick={() => handleTryOn()}>
               <span className="material-symbols-outlined fill-1" style={{ fontSize: '18px' }}>
                 auto_awesome
               </span>
               <span>Try On Look</span>
             </button>
 
-            <button className="modal-main-btn btn-buy-primary" onClick={handleBuy}>
+            <button className="modal-main-btn btn-buy-primary" onClick={() => handleBuy()}>
               <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
                 local_mall
               </span>

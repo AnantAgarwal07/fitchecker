@@ -31,8 +31,18 @@ export interface SizeRecommendationResult {
   fitDescriptor: string;
   matchScore: number;
   measuredFit: boolean;
+  isEstimate: boolean;
   confidence: number;
   humanReadableNotes: string;
+}
+
+/**
+ * Checks if a size label corresponds to one-size / free-size
+ */
+export function isOneSizeLabel(label: string | null | undefined): boolean {
+  if (!label) return false;
+  const l = label.trim().toLowerCase();
+  return l === "onesize" || l === "one size" || l === "free size" || l === "os" || l === "one-size";
 }
 
 /**
@@ -181,6 +191,8 @@ export function recommendSizeAndFit(
   user: UserMeasurementProfile,
   sizeChart: ProductSizeChart | null
 ): SizeRecommendationResult {
+  const hasMeasurements = Boolean(user.chestCm || user.bustChestCm || user.waistCm || user.hipsCm);
+
   // If product has no parseable size chart, return null without fabricating scores (PRD B3/B4)
   if (!sizeChart || !sizeChart.sizes || sizeChart.sizes.length === 0) {
     return {
@@ -188,27 +200,35 @@ export function recommendSizeAndFit(
       alternatives: [],
       fitReport: null,
       fitDescriptor: "Standard catalog sizing",
-      matchScore: 80,
+      matchScore: hasMeasurements ? 80 : 75,
       measuredFit: false,
+      isEstimate: !hasMeasurements,
       confidence: 0.5,
-      humanReadableNotes: "Product has no detailed dimensional size chart available.",
+      humanReadableNotes: hasMeasurements
+        ? "Product has no detailed dimensional size chart available."
+        : "Based on height and body type only. Add measurements for a precise fit.",
     };
   }
 
-  const hasMeasurements = Boolean(user.chestCm || user.bustChestCm || user.waistCm || user.hipsCm);
+  const isTrulyOneSize = sizeChart.sizes.length === 1 && isOneSizeLabel(sizeChart.sizes[0]?.label);
 
   // If user has no measurements, fall back to default middle size with measuredFit = false
   if (!hasMeasurements) {
-    const defaultSize = sizeChart.sizes[Math.floor(sizeChart.sizes.length / 2)]?.label || "M";
+    const nonOneSizes = sizeChart.sizes.filter((s) => !isOneSizeLabel(s.label));
+    const defaultCandidate = isTrulyOneSize
+      ? sizeChart.sizes[0]?.label || "Onesize"
+      : (nonOneSizes[Math.floor(nonOneSizes.length / 2)]?.label || "M");
+
     return {
-      recommendedSize: defaultSize,
-      alternatives: sizeChart.sizes.map((s) => s.label).filter((l) => l !== defaultSize),
+      recommendedSize: defaultCandidate,
+      alternatives: sizeChart.sizes.map((s) => s.label).filter((l) => l !== defaultCandidate),
       fitReport: null,
       fitDescriptor: `${user.fitPreference || "regular"} fit based on height`,
-      matchScore: 82,
+      matchScore: 75,
       measuredFit: false,
+      isEstimate: true,
       confidence: 0.6,
-      humanReadableNotes: "Add your chest and waist measurements in Profile to unlock centimeter-accurate size recommendations.",
+      humanReadableNotes: "Based on height and body type only. Add measurements for a precise fit.",
     };
   }
 
@@ -235,19 +255,58 @@ export function recommendSizeAndFit(
   const matchScore = Math.max(60, Math.min(99, Math.round(99 - best.weightedDeviation * 3.0)));
 
   // Generate clear human-readable fit note
-  const notes = best.fitReport
+  const notes = (best.fitReport || [])
     .map((r) => `${r.area.toUpperCase()}: ${r.easeCm >= 0 ? `+${r.easeCm}` : r.easeCm}cm ease (${r.label})`)
     .join(" · ");
 
+  // Size sentence: Never output "Onesize" as a recommendation unless product truly is one-size; otherwise omit size sentence.
+  const isOneSize = isOneSizeLabel(best.label);
+  let sizeSentence: string | null = null;
+  let recommendedSize: string | null = best.label;
+
+  if (isOneSize) {
+    if (isTrulyOneSize) {
+      sizeSentence = "One-size garment recommended";
+      recommendedSize = best.label;
+    } else {
+      sizeSentence = null;
+      recommendedSize = null;
+    }
+  } else {
+    sizeSentence = `Size ${best.label} recommended`;
+  }
+
+  // Fit preference clause: If fitPreference is empty or null, omit clause or default cleanly without trailing colons or empty clauses
+  const trimmedPref = (user.fitPreference || "").trim().toLowerCase();
+  const prefClause = trimmedPref ? ` based on your ${trimmedPref} fit preference` : "";
+
+  let humanReadableNotes: string;
+  if (sizeSentence) {
+    if (notes) {
+      humanReadableNotes = `${sizeSentence}${prefClause}: ${notes}.`;
+    } else {
+      humanReadableNotes = `${sizeSentence}${prefClause}.`;
+    }
+  } else {
+    if (notes) {
+      humanReadableNotes = `${notes}.`;
+    } else if (trimmedPref) {
+      humanReadableNotes = `Recommended fit based on your ${trimmedPref} preference.`;
+    } else {
+      humanReadableNotes = "Standard fit recommendation.";
+    }
+  }
+
   return {
-    recommendedSize: best.label,
+    recommendedSize,
     alternatives,
     fitReport: best.fitReport,
     fitDescriptor: best.fitDescriptor,
     matchScore,
     measuredFit: true,
+    isEstimate: false,
     confidence: 0.95,
-    humanReadableNotes: `Size ${best.label} recommended based on your ${user.fitPreference || "regular"} fit preference: ${notes}.`,
+    humanReadableNotes,
   };
 }
 
@@ -261,6 +320,7 @@ export function calculateMatchScore(
   matchScore: number;
   fitNote: string;
   measuredFit: boolean;
+  isEstimate: boolean;
   recommendedSize: string | null;
   fitDescriptor: string;
   fitReport: AreaFitReport[] | null;
@@ -291,6 +351,7 @@ export function calculateMatchScore(
       matchScore: finalScore,
       fitNote: sizeRec.humanReadableNotes,
       measuredFit: true,
+      isEstimate: false,
       recommendedSize: sizeRec.recommendedSize,
       fitDescriptor: sizeRec.fitDescriptor,
       fitReport: sizeRec.fitReport,
@@ -304,45 +365,20 @@ export function calculateMatchScore(
     };
   }
 
-  // Fallback heuristic when user has height/bodyType only (no measurements)
-  const fw = SCORING_CONFIG.fallbackWeights;
-  const userHeight = user.heightCm || 165;
-  const audience = product.audience || "women";
-  const refHeight =
-    audience === "men"
-      ? SCORING_CONFIG.referenceHeights.men
-      : SCORING_CONFIG.referenceHeights.women;
-
-  const delta = Math.abs(userHeight - refHeight);
-  const heightScore = Math.max(60, 100 - delta * 2.5);
-
-  const bType = (user.bodyType || "hourglass").toLowerCase();
-  const affinities = SCORING_CONFIG.bodyTypeAffinity[bType] || SCORING_CONFIG.bodyTypeAffinity.hourglass;
-  const productKey = (product.productType || product.category || "default").toLowerCase();
-  const bodyTypeScore = (affinities[productKey] ?? affinities.default ?? 0.8) * 100;
-
-  const prefScore = 85;
-  const styleScore = 80;
-
-  const fallbackFinal = Math.round(
-    heightScore * fw.height +
-    bodyTypeScore * fw.bodyType +
-    prefScore * fw.fitPreference +
-    styleScore * fw.styleVibe
-  );
-
+  // Fallback heuristic when user has height/bodyType only (no measurements: 75% default)
   return {
-    matchScore: fallbackFinal,
-    fitNote: `Silhouette aligns with your ${bType} frame. Add measurements in profile for exact size recommendations.`,
+    matchScore: 75,
+    fitNote: "Based on height and body type only. Add measurements for a precise fit.",
     measuredFit: false,
+    isEstimate: true,
     recommendedSize: sizeRec.recommendedSize,
     fitDescriptor: sizeRec.fitDescriptor,
     fitReport: null,
     breakdown: {
-      heightScore: Math.round(heightScore),
-      bodyTypeScore: Math.round(bodyTypeScore),
-      preferenceScore: prefScore,
-      styleScore,
+      heightScore: 75,
+      bodyTypeScore: 75,
+      preferenceScore: 75,
+      styleScore: 75,
     },
   };
 }

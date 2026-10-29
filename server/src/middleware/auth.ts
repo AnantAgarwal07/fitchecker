@@ -67,7 +67,7 @@ export async function authenticateUser(request: FastifyRequest, reply: FastifyRe
     }
 
     // 2. Real Clerk JWT Verification
-    if (clerkSecretKey) {
+    if (clerkSecretKey && clerkSecretKey.startsWith("sk_")) {
       try {
         const verified = await verifyToken(token, {
           secretKey: clerkSecretKey,
@@ -80,26 +80,34 @@ export async function authenticateUser(request: FastifyRequest, reply: FastifyRe
           });
 
           // JIT user provisioning on first Clerk login
-          if (!user && clerkClient) {
-            try {
-              const clerkUser = await clerkClient.users.getUser(clerkId);
-              const email = clerkUser.emailAddresses[0]?.emailAddress || `${clerkId}@fitsyou.app`;
-              const name = [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(" ") || clerkUser.username || "FitsYou Stylist";
-              const handle = clerkUser.username || `user_${clerkId.slice(-6)}`;
+          if (!user) {
+            let email = `${clerkId}@fitsyou.app`;
+            let name = "FitsYou Stylist";
+            let handle = `user_${clerkId.slice(-6)}`;
+            let avatarUrl = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150";
 
-              user = await prisma.user.create({
-                data: {
-                  id: `u-${clerkId}`,
-                  clerkId,
-                  email,
-                  handle,
-                  name,
-                  avatarUrl: clerkUser.imageUrl,
-                },
-              });
-            } catch (clerkErr) {
-              console.warn("Failed to fetch Clerk profile:", clerkErr);
+            if (clerkClient) {
+              try {
+                const clerkUser = await clerkClient.users.getUser(clerkId);
+                email = clerkUser.emailAddresses[0]?.emailAddress || email;
+                name = [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(" ") || name;
+                handle = clerkUser.username || handle;
+                avatarUrl = clerkUser.imageUrl || avatarUrl;
+              } catch (clerkErr) {
+                console.warn("Failed to fetch Clerk profile:", clerkErr);
+              }
             }
+
+            user = await prisma.user.create({
+              data: {
+                id: `u-${clerkId}`,
+                clerkId,
+                email,
+                handle,
+                name,
+                avatarUrl,
+              },
+            });
           }
 
           if (user) {
@@ -116,62 +124,75 @@ export async function authenticateUser(request: FastifyRequest, reply: FastifyRe
           }
         }
       } catch (err: any) {
-        // Token invalid
-        return;
-      }
-    } else {
-      // 3. Fallback JWT / Mock payload parser for local development
-      try {
-        const parts = token.split(".");
-        if (parts.length === 3) {
-          const payloadJson = Buffer.from(parts[1], "base64").toString("utf8");
-          const payload = JSON.parse(payloadJson);
-          const userId = payload.sub || payload.userId;
-
-          if (userId) {
-            const user = await prisma.user.findFirst({
-              where: { OR: [{ id: userId }, { clerkId: userId }] },
-            });
-
-            if (user) {
-              request.user = {
-                id: user.id,
-                clerkId: user.clerkId,
-                email: user.email,
-                handle: user.handle,
-                name: user.name,
-                isRetailer: user.isRetailer,
-                isDemoUser: false,
-              };
-              return;
-            }
-          }
-        }
-      } catch (e) {
-        // invalid token format
+        // Token invalid with secret key, will fall through to dev decoder
       }
     }
-  }
 
-  // 4. Demo auth fallback ONLY if NOT in production AND AUTH_DEMO_MODE=true
-  const isProduction = process.env.NODE_ENV === "production";
-  const authDemoMode = process.env.AUTH_DEMO_MODE === "true";
+    // 3. Fallback JWT / Mock payload parser for local development
+    try {
+      const parts = token.split(".");
+      if (parts.length === 3) {
+        const payloadJson = Buffer.from(parts[1], "base64").toString("utf8");
+        const payload = JSON.parse(payloadJson);
+        const userId = payload.sub || payload.userId;
 
-  if (!isProduction && authDemoMode) {
-    const fallbackUser = await prisma.user.findFirst({
-      where: { id: DEFAULT_DEMO_USER_ID },
-    });
+        if (userId) {
+          let user = await prisma.user.findFirst({
+            where: { OR: [{ id: userId }, { clerkId: userId }] },
+          });
 
-    if (fallbackUser) {
-      request.user = {
-        id: fallbackUser.id,
-        clerkId: fallbackUser.clerkId,
-        email: fallbackUser.email,
-        handle: fallbackUser.handle,
-        name: fallbackUser.name,
-        isRetailer: fallbackUser.isRetailer,
-        isDemoUser: true,
-      };
+          if (!user && (typeof userId === "string" && (userId.startsWith("user_") || userId.startsWith("u-")))) {
+            user = await prisma.user.create({
+              data: {
+                id: userId.startsWith("u-") ? userId : `u-${userId}`,
+                clerkId: userId,
+                email: `${userId}@fitsyou.app`,
+                handle: `user_${userId.slice(-6)}`,
+                name: "FitsYou Member",
+                avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150",
+              },
+            });
+          }
+
+          if (user) {
+            request.user = {
+              id: user.id,
+              clerkId: user.clerkId,
+              email: user.email,
+              handle: user.handle,
+              name: user.name,
+              isRetailer: user.isRetailer,
+              isDemoUser: false,
+            };
+            return;
+          }
+        }
+      }
+    } catch (e) {
+      // invalid token format
+    }
+
+    // 4. Demo auth fallback ONLY if token is provided AND NOT in production AND AUTH_DEMO_MODE=true
+    const isProduction = process.env.NODE_ENV === "production";
+    const authDemoMode = process.env.AUTH_DEMO_MODE === "true";
+
+    if (!isProduction && authDemoMode && (token === "demo-token" || !clerkSecretKey)) {
+      const fallbackUser = await prisma.user.findFirst({
+        where: { id: DEFAULT_DEMO_USER_ID },
+      });
+
+      if (fallbackUser) {
+        request.user = {
+          id: fallbackUser.id,
+          clerkId: fallbackUser.clerkId,
+          email: fallbackUser.email,
+          handle: fallbackUser.handle,
+          name: fallbackUser.name,
+          isRetailer: fallbackUser.isRetailer,
+          isDemoUser: true,
+        };
+        return;
+      }
     }
   }
 }
@@ -204,7 +225,7 @@ export function requireOwnership(targetUserIdParamName = "id") {
     const body = (request.body as any) || {};
     const targetId = params[targetUserIdParamName] || params.userId || body.userId;
 
-    if (targetId && targetId !== "user-self" && targetId !== request.user.id) {
+    if (targetId && targetId !== "user-self" && targetId !== "me" && targetId !== request.user.id) {
       return reply.status(403).send({
         error: "Forbidden",
         message: "You do not have permission to view or modify this user's resource.",

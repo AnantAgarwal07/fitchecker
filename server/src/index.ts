@@ -18,6 +18,9 @@ import { interactionRoutes } from "./routes/interactions.js";
 import { prisma } from "./db.js";
 
 
+import fastifyStatic from "@fastify/static";
+import { UPLOADS_DIR } from "./services/storage.js";
+
 // Validate security constraints at boot
 validateAuthConfig();
 
@@ -26,11 +29,36 @@ export function buildServer() {
     logger: process.env.NODE_ENV !== "test",
   });
 
+  // Register content-type parser for images before routes
+  server.addContentTypeParser(
+    /^image\/(jpeg|png|webp)$/,
+    { parseAs: "buffer", bodyLimit: 10 * 1024 * 1024 },
+    (req, body, done) => done(null, body)
+  );
+
   return server;
 }
 
-async function main() {
-  const server = buildServer();
+export async function setupApp(server: ReturnType<typeof buildServer>) {
+  // Clear JSON errors for 413 and 415
+  server.setErrorHandler((error, request, reply) => {
+    const fastifyError = error as { statusCode?: number; code?: string };
+    const statusCode = fastifyError.statusCode;
+    const errorCode = fastifyError.code;
+    if (statusCode === 413 || errorCode === "FST_ERR_CTP_BODY_TOO_LARGE") {
+      return reply.status(413).send({
+        error: "PayloadTooLarge",
+        message: "Image payload exceeds maximum limit of 10 MB.",
+      });
+    }
+    if (statusCode === 415 || errorCode === "FST_ERR_CTP_INVALID_MEDIA_TYPE") {
+      return reply.status(415).send({
+        error: "UnsupportedMediaType",
+        message: "Unsupported media type. Only image/jpeg, image/png, and image/webp are supported.",
+      });
+    }
+    reply.send(error);
+  });
 
   // 1. Security Headers via Helmet
   await server.register(helmet, {
@@ -63,7 +91,17 @@ async function main() {
 
   await server.register(sensible);
 
-  // 4. Register Routes
+  // 4. Static File Serving for /uploads/
+  await server.register(fastifyStatic, {
+    root: UPLOADS_DIR,
+    prefix: "/uploads/",
+    setHeaders: (reply) => {
+      reply.header("Cross-Origin-Resource-Policy", "cross-origin");
+      reply.header("Access-Control-Allow-Origin", "*");
+    },
+  });
+
+  // 5. Register Routes
   await server.register(healthRoutes);
   await server.register(postRoutes);
   await server.register(trendingRoutes);
@@ -75,7 +113,6 @@ async function main() {
   await server.register(savedRoutes);
   await server.register(interactionRoutes);
 
-
   // Root route
   server.get("/", async () => {
     return {
@@ -85,6 +122,13 @@ async function main() {
       documentation: "/api/health",
     };
   });
+
+  return server;
+}
+
+async function main() {
+  const server = buildServer();
+  await setupApp(server);
 
   // Graceful shutdown
   const closeSignals = ["SIGINT", "SIGTERM"];

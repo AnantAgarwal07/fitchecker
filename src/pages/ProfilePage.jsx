@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useClerk } from '@clerk/clerk-react';
 import { useApp } from '../context/AppContext';
 import { api } from '../services/api';
 import {
@@ -11,7 +12,8 @@ import './ProfilePage.css';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
-  const { currentUser: defaultUser, showToast, setActiveTryOn } = useApp();
+  const { signOut } = useClerk();
+  const { currentUser: defaultUser, isUserLoading, showToast, setActiveTryOn } = useApp();
   const [currentUser, setCurrentUser] = useState(defaultUser);
   const [savedTryOns, setSavedTryOns] = useState([]);
   const [activeTab, setActiveTab] = useState('tryons'); // 'posts' | 'tryons'
@@ -33,12 +35,18 @@ export default function ProfilePage() {
   });
 
   useEffect(() => {
+    if (defaultUser) {
+      setCurrentUser((prev) => prev || defaultUser);
+    }
+  }, [defaultUser]);
+
+  useEffect(() => {
     let isMounted = true;
     async function loadProfile() {
       const [profileData, sessions, postsData] = await Promise.all([
-        api.getUserProfile('user-self'),
-        api.getTryOnSessions({ userId: 'user-self' }),
-        api.getPosts({ userId: 'u-ananya-sharma-001' }),
+        api.getCurrentUser(),
+        api.getTryOnSessions(),
+        api.getPosts(),
       ]);
 
       if (isMounted) {
@@ -112,9 +120,9 @@ export default function ProfilePage() {
       shoulderCm: Number(bodyForm.shoulderCm) || null,
       inseamCm: Number(bodyForm.inseamCm) || null,
     };
-    await api.updateBodyProfile('user-self', payload);
-    const updated = await api.getUserProfile('user-self');
-    if (updated) setCurrentUser(updated);
+    await api.updateBodyProfile(payload, 'me');
+    const updated = await api.getCurrentUser();
+    if (updated) setCurrentUser(updated.user || updated);
   };
 
   const handleAutoEstimate = () => {
@@ -168,13 +176,26 @@ export default function ProfilePage() {
     navigate('/try-on');
   };
 
+  if (!currentUser) {
+    return (
+      <div className="profile-page" style={{ padding: '40px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+        <span className="material-symbols-outlined spin" style={{ fontSize: '36px', color: 'var(--primary)' }}>
+          progress_activity
+        </span>
+        <p style={{ marginTop: '12px', fontSize: '0.875rem', color: 'var(--on-surface-variant)' }}>
+          Loading stylist profile...
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="profile-page">
       {/* Profile Hero Header */}
       <section className="profile-hero">
         <div className="profile-identity-row">
           <div className="profile-avatar-container">
-            <img src={currentUser.avatar} alt={currentUser.name} className="profile-avatar-lg" />
+            <img src={currentUser?.bodyProfile?.fullBodyPhotoUrl || currentUser?.avatar} alt={currentUser?.name || 'Stylist'} className="profile-avatar-lg" />
             <button
               className="avatar-edit-badge"
               aria-label="Edit avatar"
@@ -188,43 +209,43 @@ export default function ProfilePage() {
 
           <div className="profile-meta-col">
             <div className="profile-name-row">
-              <h1 className="profile-name">{currentUser.name}</h1>
+              <h1 className="profile-name">{currentUser?.name}</h1>
               <span className="explorer-badge">
                 <span className="material-symbols-outlined fill-1" style={{ fontSize: '12px' }}>
                   verified
                 </span>
-                <span>{currentUser.badge}</span>
+                <span>{currentUser?.badge}</span>
               </span>
             </div>
 
-            <p className="profile-handle">{currentUser.handle}</p>
+            <p className="profile-handle">{currentUser?.handle}</p>
 
             <div className="stylist-tier">
               <span className="material-symbols-outlined fill-1" style={{ fontSize: '14px' }}>
                 auto_awesome
               </span>
-              <span>{currentUser.tier || 'Virtual Stylist Tier I'}</span>
+              <span>{currentUser?.tier || 'Virtual Stylist Tier I'}</span>
             </div>
           </div>
         </div>
 
         {/* Editorial Bio */}
         <div className="profile-bio-box">
-          <p>{currentUser.bio}</p>
+          <p>{currentUser?.bio}</p>
         </div>
 
         {/* Stats Matrix */}
         <div className="stats-matrix">
           <div className="stat-cell">
-            <span className="stat-val">{currentUser.stats?.posts ?? userPosts.length}</span>
+            <span className="stat-val">{currentUser?.stats?.posts ?? userPosts.length}</span>
             <span className="stat-lbl">Posts</span>
           </div>
           <div className="stat-cell">
-            <span className="stat-val">{currentUser.stats?.followers ?? '1.2k'}</span>
+            <span className="stat-val">{currentUser?.stats?.followers ?? '1.2k'}</span>
             <span className="stat-lbl">Followers</span>
           </div>
           <div className="stat-cell">
-            <span className="stat-val">{currentUser.stats?.following ?? 12}</span>
+            <span className="stat-val">{currentUser?.stats?.following ?? 12}</span>
             <span className="stat-lbl">Following</span>
           </div>
           <div className="stat-cell">
@@ -269,6 +290,17 @@ export default function ProfilePage() {
               checkroom
             </span>
             <span>Virtual Wardrobe</span>
+          </button>
+
+          <button
+            className="profile-btn profile-btn-secondary"
+            style={{ color: '#f87171', borderColor: 'rgba(239, 68, 68, 0.35)' }}
+            onClick={() => signOut({ redirectUrl: '/sign-in' })}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
+              logout
+            </span>
+            <span>Sign Out</span>
           </button>
         </div>
 

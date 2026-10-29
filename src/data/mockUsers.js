@@ -3,7 +3,7 @@
  */
 
 export const CURRENT_USER = {
-  id: 'user-self',
+  id: 'demo-user',
   name: 'Maya Lin',
   handle: '@mayalin_style',
   avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBo6NpMviUC1xxOfXLsehlL-JfBXdPW26nuUFlH5n0CibhfMujYS0XdLp0UAGLBvLqqRxrUYSSGNVYmAcRX005nZcSbidK9ac3-kslk-g6XPBMkuyC_Yz2iTU9ydveMzdyd5d4YQxctQbDixTUCTQlbSvMPtPO73NLqO5c4Fpn9p4Ic0eW-noKN2KaJsYp26uVqxi-Z4BqoMakgHXNXzizZVpEJpmIs9X9hp5QlFwJfuGxx1BpDEk_h',

@@ -96,6 +96,9 @@ describe("FitsYou API End-to-End Integration Suite", () => {
     const res1 = await app.inject({
       method: "POST",
       url: `/api/v1/posts/${testPostId}/like`,
+      headers: {
+        authorization: `Bearer test-token-${testUserId}`,
+      },
       payload: { userId: testUserId },
     });
     expect(res1.statusCode).toBe(200);
@@ -107,6 +110,9 @@ describe("FitsYou API End-to-End Integration Suite", () => {
     const res2 = await app.inject({
       method: "POST",
       url: `/api/v1/posts/${testPostId}/like`,
+      headers: {
+        authorization: `Bearer test-token-${testUserId}`,
+      },
       payload: { userId: testUserId },
     });
     expect(res2.statusCode).toBe(200);
@@ -135,7 +141,10 @@ describe("FitsYou API End-to-End Integration Suite", () => {
   it("GET /api/v1/for-you computes personalized match scores", async () => {
     const res = await app.inject({
       method: "GET",
-      url: "/api/v1/for-you?userId=u-ananya-sharma-001&limit=3",
+      url: "/api/v1/for-you?limit=3",
+      headers: {
+        authorization: "Bearer test-token-u-ananya-sharma-001",
+      },
     });
     expect(res.statusCode).toBe(200);
     const body = JSON.parse(res.payload);
@@ -178,8 +187,10 @@ describe("FitsYou API End-to-End Integration Suite", () => {
     const resSubmit = await app.inject({
       method: "POST",
       url: "/api/v1/try-on",
+      headers: {
+        authorization: "Bearer test-token-u-rohan-mehta-002",
+      },
       payload: {
-        userId: "u-rohan-mehta-002",
         productId: 662,
         userPhotoUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&auto=format&fit=crop&q=80",
         userHeightCm: 180,
@@ -233,6 +244,9 @@ describe("FitsYou API End-to-End Integration Suite", () => {
     const resInvalidTryOn = await app.inject({
       method: "POST",
       url: "/api/v1/try-on",
+      headers: {
+        authorization: "Bearer test-token-u-rohan-mehta-002",
+      },
       payload: {
         productId: "invalid",
       },

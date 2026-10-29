@@ -17,7 +17,29 @@ services:
         sync: false
       - key: DIRECT_URL
         sync: false
+      - key: CLERK_SECRET_KEY
+        sync: false
+      - key: CLERK_PUBLISHABLE_KEY
+        sync: false
+      - key: AUTH_DEMO_MODE
+        value: "false"
+      - key: TRYON_MODE
+        value: "live"
       - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_IMAGE_MODEL
+        value: "gemini-2.5-flash-image"
+      - key: INLINE_WORKER
+        value: "false"
+      - key: STORAGE_PROVIDER
+        value: "supabase"
+      - key: STORAGE_BUCKET
+        sync: false
+      - key: FEED_STALE_HOURS
+        value: "6"
+      - key: DEBUG_TIMING
+        value: "false"
+      - key: CORS_ORIGINS
         sync: false
       - key: SUPABASE_URL
         sync: false
@@ -32,7 +54,7 @@ services:
     dockerCommand: node dist/worker.js
     plan: starter
     region: singapore
-    numInstances: 2
+    numInstances: 1
     envVars:
       - key: NODE_ENV
         value: production
@@ -40,22 +62,30 @@ services:
         sync: false
       - key: DIRECT_URL
         sync: false
+      - key: TRYON_MODE
+        value: "live"
       - key: GEMINI_API_KEY
         sync: false
-
-  # 3. Hourly Trending Velocity Recalculation Cron
-  - type: cron
-    name: fitsyou-trending-cron
-    runtime: docker
-    schedule: "0 * * * *" # Every hour on the hour
-    dockerfilePath: ./server/Dockerfile
-    dockerCommand: node dist/cron/recalculateTrending.js
-    plan: starter
-    region: singapore
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: DATABASE_URL
+      - key: GEMINI_IMAGE_MODEL
+        value: "gemini-2.5-flash-image"
+      - key: WORKER_CONCURRENCY
+        value: "3"
+      - key: STORAGE_PROVIDER
+        value: "supabase"
+      - key: STORAGE_BUCKET
         sync: false
-      - key: DIRECT_URL
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+
+  # 3. Frontend Single Page Application
+  - type: static
+    name: fitsyou-web
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        sync: false
+      - key: VITE_CLERK_PUBLISHABLE_KEY
         sync: false

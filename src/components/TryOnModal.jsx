@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { formatINR } from '../utils/currency';
 
 export default function TryOnModal({ isOpen, onClose, garment }) {
   const navigate = useNavigate();
@@ -8,9 +9,26 @@ export default function TryOnModal({ isOpen, onClose, garment }) {
 
   if (!isOpen) return null;
 
+  const getGarmentShopUrl = () => {
+    return (
+      garment?.shopUrl ||
+      garment?.shoppingUrl ||
+      garment?.productUrl ||
+      'https://www.myntra.com'
+    );
+  };
+
+  const handleOpenStore = () => {
+    const url = getGarmentShopUrl();
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
   const handleOpenFittingRoom = () => {
     if (garment) {
-      setGarmentForTryOn(garment);
+      setGarmentForTryOn({
+        ...garment,
+        shopUrl: getGarmentShopUrl(),
+      });
     }
     onClose();
     navigate('/try-on');
@@ -97,6 +115,8 @@ export default function TryOnModal({ isOpen, onClose, garment }) {
 
         {garment && (
           <div
+            onClick={handleOpenStore}
+            title={`View ${garment.name} on store`}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -104,6 +124,9 @@ export default function TryOnModal({ isOpen, onClose, garment }) {
               backgroundColor: 'var(--surface-container-low)',
               padding: '12px',
               borderRadius: 'var(--radius-xl)',
+              cursor: 'pointer',
+              border: '1px solid rgba(232, 229, 223, 0.5)',
+              transition: 'background-color 0.15s ease',
             }}
           >
             {garment.image && (
@@ -139,41 +162,91 @@ export default function TryOnModal({ isOpen, onClose, garment }) {
                 {garment.name}
               </p>
               <span style={{ fontSize: '0.8125rem', fontWeight: '700', color: 'var(--on-surface)' }}>
-                ${garment.price}
+                {formatINR(garment.price)}
               </span>
             </div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleOpenStore();
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                padding: '6px 10px',
+                borderRadius: 'var(--radius-full)',
+                backgroundColor: 'var(--surface-container-high)',
+                border: '1px solid var(--outline-variant)',
+                color: 'var(--primary)',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              <span>Store</span>
+              <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>
+                open_in_new
+              </span>
+            </button>
           </div>
         )}
 
-        {/* Action Button to launch full screen virtual try-on */}
-        <button
-          onClick={handleOpenFittingRoom}
-          style={{
-            width: '100%',
-            padding: '14px',
-            borderRadius: 'var(--radius-full)',
-            backgroundColor: 'var(--primary)',
-            color: 'var(--on-primary)',
-            fontFamily: 'var(--font-body)',
-            fontSize: '0.9375rem',
-            fontWeight: '600',
-            border: 'none',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-            boxShadow: '0 8px 24px rgba(99, 14, 212, 0.35)',
-            transition: 'transform 0.15s ease',
-          }}
-          onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.98)')}
-          onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
-            auto_awesome
-          </span>
-          <span>Open in Virtual Fitting Room</span>
-        </button>
+        {/* Action Buttons: Try On and Shop Item */}
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button
+            onClick={handleOpenFittingRoom}
+            style={{
+              flex: 1,
+              padding: '14px',
+              borderRadius: 'var(--radius-full)',
+              backgroundColor: 'var(--primary)',
+              color: 'var(--on-primary)',
+              fontFamily: 'var(--font-body)',
+              fontSize: '0.9375rem',
+              fontWeight: '600',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              boxShadow: '0 8px 24px rgba(99, 14, 212, 0.35)',
+              transition: 'transform 0.15s ease',
+            }}
+            onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.98)')}
+            onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+              auto_awesome
+            </span>
+            <span>Virtual Fitting</span>
+          </button>
+
+          <button
+            onClick={handleOpenStore}
+            style={{
+              padding: '14px 20px',
+              borderRadius: 'var(--radius-full)',
+              backgroundColor: 'var(--surface-container-highest)',
+              color: 'var(--on-surface)',
+              fontFamily: 'var(--font-body)',
+              fontSize: '0.9375rem',
+              fontWeight: '600',
+              border: '1px solid var(--outline-variant)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'var(--primary)' }}>
+              local_mall
+            </span>
+            <span>Buy / Store</span>
+          </button>
+        </div>
       </div>
     </div>
   );

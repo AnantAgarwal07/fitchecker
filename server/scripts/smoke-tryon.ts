@@ -8,7 +8,7 @@
 
 import "dotenv/config";
 import { prisma } from "../src/db.js";
-import { startTryOnSession, executeTryOnJob } from "../src/services/tryOnPipeline.js";
+import { startTryOnSession, executeTryOnJob, claimJob } from "../src/services/tryOnPipeline.js";
 
 async function runSmokeTest() {
   console.log("🔥 [Smoke Test] Starting Virtual Try-On Pipeline Smoke Test...");
@@ -56,8 +56,9 @@ async function runSmokeTest() {
 
   console.log(`📋 [Smoke Test] Queued Job #${jobInfo.jobId} for Session #${jobInfo.tryOnSessionId}`);
 
-  // 4. Execute Try-On Pipeline directly
-  await executeTryOnJob(jobInfo.jobId, "smoke-test-runner");
+  // 4. Execute Try-On Pipeline directly (claiming atomically)
+  const claimed = await claimJob(jobInfo.jobId, "smoke-test-runner");
+  await executeTryOnJob(jobInfo.jobId, "smoke-test-runner", claimed);
 
   // 5. Inspect database results
   const completedSession = await prisma.tryOnSession.findUnique({

@@ -35,7 +35,7 @@ export const MOCK_TRENDING_LOOKS = MOCK_OUTFITS.map((outfit, index) => ({
   likesNumber: outfit.likes,
   shares: outfit.shares,
   capsuleName: `${outfit.source.name} Collection`,
-  priceRange: `$${Math.max(45, outfit.price - 60)} – $${outfit.price}`,
+  priceRange: `₹${Math.max(45, outfit.price - 60).toLocaleString('en-IN')} – ₹${outfit.price.toLocaleString('en-IN')}`,
   price: outfit.price,
   rating: outfit.rating,
   reviewCount: outfit.reviewCount,

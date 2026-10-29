@@ -7,6 +7,7 @@ import { validateAuthConfig } from "../middleware/auth.js";
 import { userRoutes } from "../routes/users.js";
 import { photoRoutes } from "../routes/photos.js";
 import { tryOnRoutes } from "../routes/tryOn.js";
+import { postRoutes } from "../routes/posts.js";
 import { startTryOnSession } from "../services/tryOnPipeline.js";
 
 describe("Phase A: Critical Security, Privacy, and Try-On Pipeline", () => {
@@ -19,6 +20,7 @@ describe("Phase A: Critical Security, Privacy, and Try-On Pipeline", () => {
     await app.register(userRoutes);
     await app.register(photoRoutes);
     await app.register(tryOnRoutes);
+    await app.register(postRoutes);
     await app.ready();
   });
 
@@ -58,6 +60,159 @@ describe("Phase A: Critical Security, Privacy, and Try-On Pipeline", () => {
     } finally {
       process.env.AUTH_DEMO_MODE = origDemo;
     }
+  });
+
+  it("Phase 3: GET /api/v1/users/me returns 401 without token and 200 with user and bodyProfile when authenticated", async () => {
+    // 1. Unauthenticated request without token returns 401
+    const unauthRes = await app.inject({
+      method: "GET",
+      url: "/api/v1/users/me",
+    });
+    expect(unauthRes.statusCode).toBe(401);
+    expect(unauthRes.json().error).toBe("Unauthorized");
+
+    // 2. Authenticated request returns 200 with user & bodyProfile
+    const authRes = await app.inject({
+      method: "GET",
+      url: "/api/v1/users/me",
+      headers: {
+        authorization: "Bearer test-token-u-ananya-sharma-001",
+      },
+    });
+    expect(authRes.statusCode).toBe(200);
+    const data = authRes.json();
+    expect(data.id).toBe("u-ananya-sharma-001");
+    expect(data).toHaveProperty("bodyProfile");
+    expect(data.bodyProfile).not.toBeNull();
+  });
+
+  it("Phase 3: PUT /api/v1/users/me/body-profile creates profile if none exists (upsert) and enforces ownership", async () => {
+    // Create temporary user with NO body profile
+    const newUser = await prisma.user.create({
+      data: {
+        id: "u-test-onboarding-user",
+        email: "onboard@fitsyou.app",
+        handle: "onboard_stylist",
+        name: "Onboarding Stylist",
+      },
+    });
+
+    try {
+      // Verify bodyProfile is null initially
+      const meRes = await app.inject({
+        method: "GET",
+        url: "/api/v1/users/me",
+        headers: {
+          authorization: `Bearer test-token-${newUser.id}`,
+        },
+      });
+      expect(meRes.statusCode).toBe(200);
+      expect(meRes.json().bodyProfile).toBeNull();
+
+      // Upsert body profile via PUT /api/v1/users/me/body-profile
+      const putRes = await app.inject({
+        method: "PUT",
+        url: "/api/v1/users/me/body-profile",
+        headers: {
+          authorization: `Bearer test-token-${newUser.id}`,
+        },
+        payload: {
+          heightCm: 172,
+          gender: "women",
+          bodyType: "rectangle",
+          chestCm: 86,
+          waistCm: 68,
+          hipsCm: 92,
+        },
+      });
+
+      expect(putRes.statusCode).toBe(200);
+      const putData = putRes.json();
+      expect(putData.bodyProfile.heightCm).toBe(172);
+      expect(putData.bodyProfile.bodyType).toBe("rectangle");
+
+      // Verify persisted in DB
+      const dbCheck = await prisma.bodyProfile.findUnique({
+        where: { userId: newUser.id },
+      });
+      expect(dbCheck).not.toBeNull();
+      expect(dbCheck?.heightCm).toBe(172);
+    } finally {
+      await prisma.bodyProfile.deleteMany({ where: { userId: newUser.id } });
+      await prisma.user.delete({ where: { id: newUser.id } });
+    }
+  });
+
+  it("Phase 3: client-sent userId in body or query is ignored on protected routes", async () => {
+    // 1. POST /api/v1/posts/:id/like: user A tries to send userId: "u-rohan-mehta-002"
+    let post = await prisma.post.findFirst();
+    if (!post) {
+      post = await prisma.post.create({
+        data: {
+          id: "test-post-phase3",
+          userId: "u-rohan-mehta-002",
+          caption: "Test outfit look",
+          category: "casual",
+          imageUrl: "https://example.com/post.jpg",
+        },
+      });
+    }
+
+    const likeRes = await app.inject({
+      method: "POST",
+      url: `/api/v1/posts/${post.id}/like`,
+      headers: {
+        authorization: "Bearer test-token-u-ananya-sharma-001",
+      },
+      payload: {
+        userId: "u-rohan-mehta-002",
+      },
+    });
+    expect(likeRes.statusCode).toBe(200);
+
+    // Verify like in DB was recorded for user 1 (u-ananya-sharma-001), NOT user 2
+    const likeRecord = await prisma.postLike.findUnique({
+      where: {
+        postId_userId: {
+          postId: post.id,
+          userId: "u-ananya-sharma-001",
+        },
+      },
+    });
+    expect(likeRecord).not.toBeNull();
+
+    // Clean up like
+    if (likeRecord) {
+      await prisma.postLike.delete({ where: { id: likeRecord.id } });
+    }
+
+    // 2. POST /api/v1/try-on: client sends spoofed userId: "u-rohan-mehta-002"
+    const tryOnRes = await app.inject({
+      method: "POST",
+      url: "/api/v1/try-on",
+      headers: {
+        authorization: "Bearer test-token-u-ananya-sharma-001",
+      },
+      payload: {
+        userId: "u-rohan-mehta-002", // should be ignored!
+        productId: 392,
+        userHeightCm: 165,
+        sizeSelected: "M",
+      },
+    });
+    expect(tryOnRes.statusCode).toBe(202);
+    const tryOnData = tryOnRes.json();
+
+    // Verify session in DB belongs to authenticated user (u-ananya-sharma-001)
+    const session = await prisma.tryOnSession.findUnique({
+      where: { id: tryOnData.tryOnSessionId },
+    });
+    expect(session).not.toBeNull();
+    expect(session?.userId).toBe("u-ananya-sharma-001");
+
+    // Clean up
+    await prisma.renderJob.deleteMany({ where: { tryOnSessionId: tryOnData.tryOnSessionId } });
+    await prisma.tryOnSession.delete({ where: { id: tryOnData.tryOnSessionId } });
   });
 
   it("A3: returns 403 Forbidden when user attempts to update another user's body profile", async () => {

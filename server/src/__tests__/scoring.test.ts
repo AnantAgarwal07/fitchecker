@@ -7,7 +7,9 @@ import {
   calculateMatchScore,
   calculateTrendingVelocity,
   extractModelHeightCm,
+  recommendSizeAndFit,
 } from "../services/scoring.js";
+import { ProductSizeChart } from "../services/sizeChart.js";
 
 describe("Scoring Heuristics & Match Engine", () => {
   it("extracts model height correctly from rawDetails text", () => {
@@ -95,5 +97,122 @@ describe("Scoring Heuristics & Match Engine", () => {
     expect(freshScore).toBeGreaterThan(oldScore);
     // After 48h (2 half lives of 24h), score should be roughly 1/4th of base
     expect(oldScore / freshScore).toBeCloseTo(0.25, 1);
+  });
+
+  // Part 3 Unit Tests
+  it("omits fit preference clause when fitPreference is empty or null, without trailing colons", () => {
+    const userWithoutPref = {
+      chestCm: 96,
+      waistCm: 80,
+      fitPreference: null,
+    };
+
+    const sizeChart: ProductSizeChart = {
+      garmentType: "top",
+      unit: "cm",
+      sizes: [
+        { label: "M", chestCm: 102, waistCm: 86, type: "top" },
+      ],
+    };
+
+    const rec = recommendSizeAndFit(userWithoutPref, sizeChart);
+    expect(rec.recommendedSize).toBe("M");
+    expect(rec.measuredFit).toBe(true);
+    expect(rec.isEstimate).toBe(false);
+
+    // Must NOT contain trailing ': .' or awkward empty preference clause
+    expect(rec.humanReadableNotes).not.toContain(": .");
+    expect(rec.humanReadableNotes).not.toContain("based on your  fit preference");
+    expect(rec.humanReadableNotes).toMatch(/^Size M recommended: CHEST:/);
+  });
+
+  it("handles missing user measurements with default 75% score and isEstimate: true", () => {
+    const userWithoutMeasurements = {
+      heightCm: 168,
+      bodyType: "hourglass",
+      fitPreference: "regular",
+      // No chest, bust, waist, hips
+    };
+
+    const product = {
+      id: 501,
+      name: "Classic Silk Shirt",
+      sizeChart: {
+        garmentType: "top",
+        unit: "cm",
+        sizes: [
+          { label: "S", chestCm: 90, waistCm: 76, type: "top" },
+          { label: "M", chestCm: 96, waistCm: 82, type: "top" },
+          { label: "L", chestCm: 104, waistCm: 90, type: "top" },
+        ],
+      },
+    };
+
+    const matchRes = calculateMatchScore(userWithoutMeasurements, product);
+    expect(matchRes.matchScore).toBe(75);
+    expect(matchRes.measuredFit).toBe(false);
+    expect(matchRes.isEstimate).toBe(true);
+    expect(matchRes.fitNote).toBe("Based on height and body type only. Add measurements for a precise fit.");
+  });
+
+  it("never outputs 'Size Onesize recommended' unless product truly is one-size", () => {
+    const user = {
+      chestCm: 96,
+      waistCm: 82,
+      fitPreference: "regular",
+    };
+
+    // Case 1: Multi-sized product with an "Onesize" label among other sizes (NOT truly one-size)
+    const multiSizeChartWithOneSize: ProductSizeChart = {
+      garmentType: "top",
+      unit: "cm",
+      sizes: [
+        { label: "Onesize", chestCm: 100, waistCm: 84, type: "top" },
+        { label: "M", chestCm: 102, waistCm: 86, type: "top" },
+      ],
+    };
+
+    const recMulti = recommendSizeAndFit(user, multiSizeChartWithOneSize);
+    expect(recMulti.humanReadableNotes).not.toContain("Size Onesize recommended");
+    expect(recMulti.humanReadableNotes).not.toContain(": .");
+
+    // Case 2: Truly one-size product (single size 'Onesize')
+    const trulyOneSizeChart: ProductSizeChart = {
+      garmentType: "top",
+      unit: "cm",
+      sizes: [
+        { label: "Onesize", chestCm: 102, waistCm: 86, type: "top" },
+      ],
+    };
+
+    const recTruly = recommendSizeAndFit(user, trulyOneSizeChart);
+    expect(recTruly.recommendedSize).toBe("Onesize");
+    expect(recTruly.humanReadableNotes).toContain("One-size garment recommended based on your regular fit preference:");
+  });
+
+  it("handles normal measured case with accurate size recommendation and clean note", () => {
+    const user = {
+      chestCm: 96,
+      waistCm: 80,
+      fitPreference: "relaxed",
+    };
+
+    const sizeChart: ProductSizeChart = {
+      garmentType: "top",
+      unit: "cm",
+      sizes: [
+        { label: "S", chestCm: 96, waistCm: 80, type: "top" },
+        { label: "M", chestCm: 104, waistCm: 88, type: "top" },
+        { label: "L", chestCm: 112, waistCm: 96, type: "top" },
+      ],
+    };
+
+    const rec = recommendSizeAndFit(user, sizeChart);
+    expect(rec.recommendedSize).toBe("M");
+    expect(rec.measuredFit).toBe(true);
+    expect(rec.isEstimate).toBe(false);
+    expect(rec.matchScore).toBeGreaterThanOrEqual(80);
+    expect(rec.humanReadableNotes).toContain("Size M recommended based on your relaxed fit preference: CHEST: +8cm ease");
+    expect(rec.humanReadableNotes).not.toContain(": .");
   });
 });

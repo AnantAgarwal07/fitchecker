@@ -1,29 +1,55 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { api } from '../services/api';
 import './TryOnPage.css';
 
 export default function TryOnPage() {
+  const [searchParams] = useSearchParams();
+  const queryProductId = searchParams.get('productId');
+
   const {
     activeTryOn,
     setActiveTryOn,
-    sourcePersona,
-    setSourcePersona,
     saveTryOnToCollection,
-    setGarmentForTryOn,
     showToast,
+    currentUser,
   } = useApp();
 
   const [activeView, setActiveView] = useState('ai'); // 'ai' | 'original'
-  const [selectedPersonaOption, setSelectedPersonaOption] = useState('saved'); // 'saved' | 'upload' | 'camera'
   const [isGarmentPickerOpen, setIsGarmentPickerOpen] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
   const [catalogProducts, setCatalogProducts] = useState([]);
   const [isRendering, setIsRendering] = useState(false);
+  const [jobStatus, setJobStatus] = useState('IDLE'); // 'IDLE' | 'QUEUED' | 'PROCESSING' | 'COMPLETED' | 'FAILED'
   const [renderProgress, setRenderProgress] = useState(0);
+  const [renderError, setRenderError] = useState(null);
+  const [selectedGarment, setSelectedGarment] = useState(null);
   const [productFitData, setProductFitData] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
 
-  const garment = activeTryOn.garment;
+  const hasAutoStartedRef = useRef(false);
+
+  const garment = activeTryOn?.garment || selectedGarment;
+
+  // Load authenticated user profile for real photo and height
+  useEffect(() => {
+    let isMounted = true;
+    async function loadProfile() {
+      try {
+        const profile = await api.getCurrentUser();
+        if (isMounted && profile) {
+          setUserProfile(profile.user || profile);
+        }
+      } catch (err) {
+        console.warn('Failed to load profile in TryOnPage:', err);
+      }
+    }
+    loadProfile();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Load fit report data for current garment (Phase B5)
   useEffect(() => {
@@ -43,13 +69,23 @@ export default function TryOnPage() {
     };
   }, [garment?.id]);
 
-  // Load catalog products for the garment change picker
+  // Load catalog products for garment picker modal
   useEffect(() => {
     let isMounted = true;
     async function loadCatalog() {
       const data = await api.getProducts({ wearableOnly: true, limit: 30 });
       if (isMounted && data.products) {
-        setCatalogProducts(data.products);
+        setCatalogProducts(
+          data.products.map((p) => {
+            const itemUrl = p.shopUrl || p.productUrl || p.shoppingUrl || 'https://www.myntra.com';
+            return {
+              ...p,
+              shopUrl: itemUrl,
+              shoppingUrl: itemUrl,
+              productUrl: itemUrl,
+            };
+          })
+        );
       }
     }
     loadCatalog();
@@ -58,15 +94,59 @@ export default function TryOnPage() {
     };
   }, []);
 
+  // Auto-load product if productId query parameter exists
+  useEffect(() => {
+    let isMounted = true;
+    async function loadQueryGarment() {
+      if (!queryProductId) return;
+      try {
+        const prodData = await api.getProductById(queryProductId);
+        const p = prodData?.product || prodData;
+        if (isMounted && p && p.id) {
+          const itemUrl = p.shopUrl || p.productUrl || p.shoppingUrl || 'https://www.myntra.com';
+          const primaryImg = p.image || p.ProductImage?.[0]?.imageUrl || 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600';
+          const formatted = {
+            id: p.id,
+            name: p.name,
+            brand: p.brand || 'Brand',
+            price: Number(p.currentPrice || p.price || 0),
+            image: primaryImg,
+            shopUrl: itemUrl,
+            shoppingUrl: itemUrl,
+            productUrl: itemUrl,
+            sizes: p.sizes || ['S', 'M', 'L'],
+          };
+          setSelectedGarment(formatted);
+          handleSelectGarment(formatted);
+        }
+      } catch (err) {
+        console.warn('Failed to load product from query param:', err);
+      }
+    }
+    loadQueryGarment();
+    return () => {
+      isMounted = false;
+    };
+  }, [queryProductId]);
+
+  // Auto-start try-on if user navigated with a garment selected but no render yet
+  useEffect(() => {
+    if (activeTryOn?.garment && !activeTryOn.aiRenderedImage && !isRendering && !renderError && !hasAutoStartedRef.current) {
+      hasAutoStartedRef.current = true;
+      handleSelectGarment(activeTryOn.garment);
+    }
+  }, [activeTryOn?.garment]);
 
   const handleSaveLook = () => {
+    if (!activeTryOn?.aiRenderedImage || !garment) return;
     saveTryOnToCollection(activeTryOn);
     showToast('Look saved to your wardrobe collection!', 'bookmark_added');
   };
 
   const handleShopItem = () => {
-    const url = garment.shopUrl || 'https://www.myntra.com';
-    window.open(url, '_blank');
+    const url = garment?.shopUrl || garment?.shoppingUrl || garment?.productUrl || 'https://www.myntra.com';
+    window.open(url, '_blank', 'noopener,noreferrer');
+    showToast(`Opening ${garment?.brand || 'storefront'}...`, 'shopping_bag');
   };
 
   const handleShareLook = () => {
@@ -75,281 +155,391 @@ export default function TryOnPage() {
   };
 
   const handleSelectGarment = async (prod) => {
+    setSelectedGarment(prod);
     setIsGarmentPickerOpen(false);
     setIsRendering(true);
-    setRenderProgress(20);
-    showToast(`Dressing model in ${prod.name}...`, 'auto_awesome');
+    setRenderError(null);
+    setJobStatus('QUEUED');
+    setRenderProgress(10);
+    showToast(`Queuing try-on for ${prod.name}...`, 'auto_awesome');
 
     try {
+      // Real authenticated user photo and height
+      const effHeight = userProfile?.bodyProfile?.heightCm || currentUser?.bodyProfile?.heightCm || 165;
+      const effPhoto = userProfile?.bodyProfile?.fullBodyPhotoUrl || currentUser?.bodyProfile?.fullBodyPhotoUrl || userProfile?.avatarUrl || userProfile?.avatar || '';
+
       // 1. Submit try-on request to backend
       const res = await api.submitTryOn({
-        userId: 'u-ananya-sharma-001',
         productId: prod.id,
-        userPhotoUrl: activeTryOn.originalPhoto || 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&auto=format&fit=crop&q=80',
-        userHeightCm: 165,
+        userPhotoUrl: effPhoto,
+        userHeightCm: effHeight,
         sizeSelected: prod.sizes?.[0] || 'M',
       });
 
-      if (res && res.jobId) {
-        // 2. Poll for completion
-        let attempts = 0;
-        const interval = setInterval(async () => {
-          attempts++;
-          const statusRes = await api.pollTryOnJob(res.jobId);
-          if (statusRes) {
-            setRenderProgress(statusRes.progressPercent || Math.min(95, attempts * 25));
-
-            if (statusRes.status === 'COMPLETED') {
-              clearInterval(interval);
-              setIsRendering(false);
-              setRenderProgress(100);
-
-              setActiveTryOn({
-                id: statusRes.tryOnSessionId || `tryon-${Date.now()}`,
-                garment: {
-                  id: prod.id,
-                  name: prod.name,
-                  brand: prod.brand,
-                  price: prod.price,
-                  image: prod.image,
-                  shopUrl: prod.shopUrl,
-                },
-                aiRenderedImage: statusRes.renderedImageUrl || prod.image,
-                originalPhoto: activeTryOn.originalPhoto,
-                fitNote: statusRes.fitNote || `${prod.brand} Tailored Fit`,
-                matchScore: statusRes.fitScore ? `${statusRes.fitScore}%` : '94%',
-              });
-
-              showToast(`Virtual try-on completed! Fit Score: ${statusRes.fitScore || 94}%`, 'check_circle');
-            } else if (statusRes.status === 'FAILED' || attempts > 20) {
-              clearInterval(interval);
-              setIsRendering(false);
-              setGarmentForTryOn(prod);
-              showToast('Generated instant try-on preview', 'auto_awesome');
-            }
-          }
-        }, 600);
-      } else {
-        // Local immediate fallback
-        setIsRendering(false);
-        setGarmentForTryOn(prod);
+      if (!res || !res.jobId) {
+        throw new Error(res?.error?.message || res?.message || 'Failed to queue virtual try-on job.');
       }
-    } catch (e) {
+
+      // 2. Poll using waitForJob until COMPLETED or throw on FAILED/timeout
+      const statusRes = await api.waitForJob(res.jobId, {
+        intervalMs: 2000,
+        timeoutMs: 120000,
+        onProgress: (job) => {
+          setJobStatus(job.status);
+          setRenderProgress(job.progressPercent || (job.status === 'PROCESSING' ? 50 : 10));
+        },
+      });
+
+      // 3. COMPLETED!
       setIsRendering(false);
-      setGarmentForTryOn(prod);
+      setJobStatus('COMPLETED');
+      setRenderProgress(100);
+
+      setActiveTryOn({
+        id: statusRes.tryOnSessionId || `tryon-${Date.now()}`,
+        garment: {
+          id: prod.id,
+          name: prod.name,
+          brand: prod.brand,
+          price: prod.price,
+          image: prod.image,
+          shopUrl: prod.shopUrl,
+        },
+        aiRenderedImage: statusRes.renderedImageUrl,
+        originalPhoto: effPhoto,
+        fitNote: statusRes.fitNote || `${prod.brand} Custom Tailoring`,
+        matchScore: statusRes.fitScore ? `${statusRes.fitScore}%` : '94%',
+        mode: statusRes.mode || 'demo',
+      });
+
+      showToast(`Virtual try-on completed! Fit Score: ${statusRes.fitScore || 94}%`, 'check_circle');
+    } catch (err) {
+      console.error('[FitsYou Try-On Exception]', err);
+      setIsRendering(false);
+      setJobStatus('FAILED');
+
+      // Separate programming errors from API errors
+      const isProgrammingError =
+        err instanceof ReferenceError ||
+        err instanceof TypeError ||
+        err instanceof RangeError ||
+        err instanceof SyntaxError;
+
+      if (isProgrammingError) {
+        setRenderError({
+          isProgrammingError: true,
+          message: 'Something went wrong while setting up your fitting. Please refresh or try again.',
+        });
+        showToast('Something went wrong. Please try again.', 'error');
+      } else {
+        const errorMsg = err.message || 'Virtual try-on generation failed.';
+        setRenderError({
+          isProgrammingError: false,
+          message: errorMsg,
+        });
+        showToast(`Try-on failed: ${errorMsg}`, 'error');
+      }
+      // Never fall back to catalog image as a "result"!
     }
   };
+
+  const handleRetry = () => {
+    const target = garment || selectedGarment;
+    if (target) {
+      handleSelectGarment(target);
+    } else {
+      setIsGarmentPickerOpen(true);
+    }
+  };
+
+  // TODO (Phase 3): replace with auth user
+  const userPhoto = userProfile?.bodyProfile?.fullBodyPhotoUrl || userProfile?.avatar;
+  const userHeight = userProfile?.bodyProfile?.heightCm || userProfile?.heightCm;
 
   return (
     <div className="tryon-page">
       <div className="tryon-content">
-        {/* 1. Source Persona Selection Area */}
+        {/* 1. Source Persona: Single elevated card with photo, height, and Update in Profile link */}
         <section className="persona-selector-section">
           <div className="persona-header-row">
             <span className="persona-title-lbl">Source Persona</span>
-            <div className="calibration-badge">
-              <span className="material-symbols-outlined fill-1" style={{ fontSize: '14px' }}>
-                auto_awesome
+            <Link to="/profile" className="persona-update-link">
+              <span>Update in Profile</span>
+              <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>
+                arrow_forward
               </span>
-              <span>Calibration Ready</span>
-            </div>
+            </Link>
           </div>
 
-          <div className="persona-grid">
-            {/* Option 1: Saved Model Active */}
-            <button
-              className={`persona-card-btn ${selectedPersonaOption === 'saved' ? 'active' : 'inactive'}`}
-              onClick={() => setSelectedPersonaOption('saved')}
-            >
-              <div className="persona-avatar-wrap ringed">
-                <img src={sourcePersona.avatar} alt={sourcePersona.name} />
+          <div className="persona-single-card">
+            {userPhoto ? (
+              <div className="persona-card-content">
+                <div className="persona-avatar-wrap ringed">
+                  <img src={userPhoto} alt={userProfile?.name || 'Your Persona'} />
+                </div>
+                <div className="persona-info-col">
+                  <span className="persona-name">{userProfile?.name || 'Your Profile Persona'}</span>
+                  <div className="persona-meta-row">
+                    {userHeight ? (
+                      <span className="persona-height-badge">
+                        <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>
+                          straighten
+                        </span>
+                        <span>{userHeight} cm</span>
+                      </span>
+                    ) : (
+                      <span className="persona-sub">Height not set</span>
+                    )}
+                    <span style={{ fontSize: '0.6875rem', color: 'var(--on-surface-variant)' }}>
+                      Calibrated for Drape
+                    </span>
+                  </div>
+                </div>
               </div>
-              <span className="persona-name">{sourcePersona.name}</span>
-              <span className="persona-sub">Default Model</span>
-              {selectedPersonaOption === 'saved' && (
-                <div className="persona-check-badge">
-                  <span className="material-symbols-outlined" style={{ fontSize: '11px' }}>
-                    check
+            ) : (
+              <div className="persona-no-photo-prompt">
+                <div className="persona-icon-circle">
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                    add_a_photo
                   </span>
                 </div>
-              )}
-            </button>
-
-            {/* Option 2: Upload Photo */}
-            <button
-              className={`persona-card-btn ${selectedPersonaOption === 'upload' ? 'active' : 'inactive'}`}
-              onClick={() => {
-                setSelectedPersonaOption('upload');
-                showToast('Upload photo calibrated with 165cm height', 'add_photo_alternate');
-              }}
-            >
-              <div className="persona-icon-circle">
-                <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
-                  add_photo_alternate
-                </span>
+                <div className="persona-info-col">
+                  <span className="persona-no-photo-title">No reference photo added</span>
+                  <span className="persona-no-photo-desc">
+                    Add a full-body photo in your profile to enable personalized fitting
+                  </span>
+                </div>
+                <Link to="/profile" className="persona-add-photo-btn">
+                  Add in Profile
+                </Link>
               </div>
-              <span className="persona-name">Upload Photo</span>
-              <span style={{ fontSize: '0.625rem', color: 'var(--on-surface-variant)' }}>Gallery / File</span>
-            </button>
-
-            {/* Option 3: Take Photo */}
-            <button
-              className={`persona-card-btn ${selectedPersonaOption === 'camera' ? 'active' : 'inactive'}`}
-              onClick={() => {
-                setSelectedPersonaOption('camera');
-                showToast('Camera calibrated for instant pose', 'photo_camera');
-              }}
-            >
-              <div className="persona-icon-circle">
-                <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
-                  photo_camera
-                </span>
-              </div>
-              <span className="persona-name">Take Photo</span>
-              <span style={{ fontSize: '0.625rem', color: 'var(--on-surface-variant)' }}>Instant Pose</span>
-            </button>
-          </div>
-        </section>
-
-        {/* 2. Garment Selection Preview Strip */}
-        <section className="garment-strip">
-          <div className="garment-strip-left">
-            {garment.image && (
-              <img src={garment.image} alt={garment.name} className="garment-strip-thumb" />
             )}
-            <div className="garment-strip-info">
-              <div className="garment-strip-tag-row">
-                <span>Trying On</span>
-                <span>•</span>
-                <span style={{ color: 'var(--on-surface-variant)' }}>₹{garment.price}</span>
-              </div>
-              <h2 className="garment-strip-title">{garment.name}</h2>
-              <p className="garment-strip-sub">
-                {garment.brand} {garment.collection ? `· ${garment.collection}` : ''}
-              </p>
-            </div>
           </div>
-
-          <button className="garment-change-btn" onClick={() => setIsGarmentPickerOpen(true)}>
-            <span>Change</span>
-            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
-              swap_horiz
-            </span>
-          </button>
         </section>
+
+        {/* 2. Garment Selection Preview Strip (shown when garment is selected) */}
+        {garment && (
+          <section className="garment-strip">
+            <div
+              className="garment-strip-left"
+              onClick={handleShopItem}
+              title="Click to view product on retailer storefront"
+              style={{ cursor: 'pointer' }}
+            >
+              {garment.image && (
+                <img src={garment.image} alt={garment.name} className="garment-strip-thumb" />
+              )}
+              <div className="garment-strip-info">
+                <div className="garment-strip-tag-row">
+                  <span>Trying On</span>
+                  <span>•</span>
+                  <span style={{ color: 'var(--on-surface-variant)' }}>₹{garment.price}</span>
+                  <span className="material-symbols-outlined" style={{ fontSize: '13px', color: 'var(--primary)' }}>
+                    open_in_new
+                  </span>
+                </div>
+                <h2 className="garment-strip-title">{garment.name}</h2>
+                <p className="garment-strip-sub">
+                  {garment.brand} {garment.collection ? `· ${garment.collection}` : ''}
+                </p>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <button
+                className="garment-change-btn"
+                onClick={handleShopItem}
+                title="Open product on retailer storefront"
+                style={{ backgroundColor: 'var(--primary-container)', color: 'var(--primary)' }}
+              >
+                <span>Shop</span>
+                <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>
+                  open_in_new
+                </span>
+              </button>
+              <button className="garment-change-btn" onClick={() => setIsGarmentPickerOpen(true)}>
+                <span>Change</span>
+                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+                  swap_horiz
+                </span>
+              </button>
+            </div>
+          </section>
+        )}
 
         {/* 3. Realistic AI Try-On Canvas Stage (3:4) */}
         <section className="tryon-stage">
-          {/* AI Rendered Layer */}
-          <img
-            src={activeTryOn.aiRenderedImage}
-            alt="AI Rendered Fitting Result"
-            className="stage-layer-img"
-            style={{
-              opacity: activeView === 'ai' ? 1 : 0,
-              transform: isZoomed ? 'scale(1.25)' : 'scale(1)',
-              transition: 'transform 0.3s ease, opacity 0.3s ease',
-            }}
-          />
-
-          {/* Original Photo Layer */}
-          <img
-            src={activeTryOn.originalPhoto}
-            alt="Original User Reference"
-            className="stage-layer-img"
-            style={{
-              opacity: activeView === 'original' ? 1 : 0,
-              transform: isZoomed ? 'scale(1.25)' : 'scale(1)',
-              transition: 'transform 0.3s ease, opacity 0.3s ease',
-            }}
-          />
-
-          {/* Rendering Overlay */}
-          {isRendering && (
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                backgroundColor: 'rgba(27, 27, 30, 0.75)',
-                backdropFilter: 'blur(6px)',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '12px',
-                zIndex: 10,
-                color: 'var(--on-surface)',
-              }}
-            >
-              <span className="material-symbols-outlined spin" style={{ fontSize: '36px', color: 'var(--primary)' }}>
-                progress_activity
-              </span>
-              <p style={{ fontWeight: 600, fontSize: '0.9375rem' }}>AI Virtual Fitting in Progress...</p>
-              <div style={{ width: '160px', height: '4px', backgroundColor: 'var(--surface-container-high)', borderRadius: '2px', overflow: 'hidden' }}>
-                <div style={{ width: `${renderProgress}%`, height: '100%', backgroundColor: 'var(--primary)', transition: 'width 0.3s ease' }} />
+          {/* State A: Skeleton Loading State (while QUEUED or PROCESSING) */}
+          {isRendering ? (
+            <div className="tryon-stage-skeleton">
+              <div className="skeleton-canvas-shimmer" />
+              <div className="skeleton-status-box">
+                <span className="material-symbols-outlined spin" style={{ fontSize: '38px', color: 'var(--primary)' }}>
+                  progress_activity
+                </span>
+                <p className="skeleton-status-title">
+                  {jobStatus === 'QUEUED' ? 'Queued for Virtual Fitting...' : 'AI Fitting & Calibration in Progress...'}
+                </p>
+                <div className="skeleton-progress-bar-bg">
+                  <div className="skeleton-progress-bar-fill" style={{ width: `${renderProgress}%` }} />
+                </div>
+                <span className="skeleton-progress-sub">
+                  {jobStatus === 'QUEUED'
+                    ? 'Job queued in background (10%)'
+                    : `Calibrating drape, seams & lighting (${renderProgress}%)`}
+                </span>
               </div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)' }}>Calibrating drape & seams</span>
             </div>
-          )}
-
-          {/* Top Controls Overlay */}
-          <div className="stage-top-controls">
-            <div className="mock-preview-pill">
-              <span className="material-symbols-outlined fill-1" style={{ fontSize: '14px', color: 'var(--secondary-fixed-dim)' }}>
-                auto_fix_high
+          ) : renderError ? (
+            /* State B: Error State with Retry Button (Never fallback to catalog image!) */
+            <div className="tryon-stage-error">
+              <span className="material-symbols-outlined" style={{ fontSize: '48px', color: '#ff6b6b' }}>
+                error_outline
               </span>
-              <span>{activeTryOn.matchScore ? `${activeTryOn.matchScore} Match` : 'AI Generated'}</span>
+              <h3 style={{ fontSize: '1.0625rem', fontWeight: 700, color: 'var(--on-surface)' }}>
+                {renderError?.isProgrammingError ? 'Something Went Wrong' : 'Virtual Fitting Failed'}
+              </h3>
+              <p style={{ fontSize: '0.8125rem', color: 'var(--on-surface-variant)', maxWidth: '280px', lineHeight: 1.4 }}>
+                {renderError?.message || renderError}
+              </p>
+              <button className="tryon-retry-btn" onClick={handleRetry}>
+                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
+                  replay
+                </span>
+                <span>Retry Fitting</span>
+              </button>
+              <button
+                className="garment-change-btn"
+                style={{ marginTop: '4px' }}
+                onClick={() => setIsGarmentPickerOpen(true)}
+              >
+                Choose Different Garment
+              </button>
             </div>
-
-            <button
-              className="stage-zoom-btn"
-              onClick={() => setIsZoomed(!isZoomed)}
-              aria-label="Inspect fabric details"
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
-                {isZoomed ? 'zoom_out' : 'zoom_in'}
-              </span>
-            </button>
-          </div>
-
-          {/* Center Dynamic Garment Hotspot Chip */}
-          {activeView === 'ai' && (
-            <div className="center-hotspot-chip">
-              <span
+          ) : !activeTryOn?.aiRenderedImage ? (
+            /* State C: Empty State ("Pick a garment to try on") */
+            <div className="tryon-stage-empty">
+              <div className="empty-icon-wrap">
+                <span className="material-symbols-outlined" style={{ fontSize: '32px', color: 'var(--primary)' }}>
+                  checkroom
+                </span>
+              </div>
+              <h3 style={{ fontSize: '1.0625rem', fontWeight: 700, color: 'var(--on-surface)' }}>
+                Pick a garment to try on
+              </h3>
+              <p style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)', maxWidth: '260px' }}>
+                Browse runway catalog items to simulate realistic virtual try-ons with anthropometric drape
+              </p>
+              <button className="tryon-pick-garment-btn" onClick={() => setIsGarmentPickerOpen(true)}>
+                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
+                  swap_horiz
+                </span>
+                <span>Select Garment from Catalog</span>
+              </button>
+            </div>
+          ) : (
+            /* State D: Completed Try-On Result */
+            <>
+              {/* AI Rendered Layer */}
+              <img
+                src={activeTryOn.aiRenderedImage}
+                alt="AI Rendered Fitting Result"
+                className="stage-layer-img"
                 style={{
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  backgroundColor: 'var(--primary)',
-                  boxShadow: '0 0 8px var(--primary)',
+                  opacity: activeView === 'ai' ? 1 : 0,
+                  transform: isZoomed ? 'scale(1.25)' : 'scale(1)',
+                  transition: 'transform 0.3s ease, opacity 0.3s ease',
                 }}
               />
-              <span>{activeTryOn.fitNote || 'Structured Silk Fit'}</span>
-            </div>
-          )}
 
-          {/* Bottom Floating View Slider Pill (Original vs Virtual Try-On) */}
-          <div className="stage-slider-pill">
-            <button
-              className={`slider-toggle-btn ${activeView === 'original' ? 'active' : 'inactive'}`}
-              onClick={() => setActiveView('original')}
-            >
-              Original Photo
-            </button>
-            <button
-              className={`slider-toggle-btn ${activeView === 'ai' ? 'active' : 'inactive'}`}
-              onClick={() => setActiveView('ai')}
-            >
-              <span className="material-symbols-outlined fill-1" style={{ fontSize: '13px', marginRight: '4px' }}>
-                auto_fix_high
-              </span>
-              Virtual Try-On
-            </button>
-          </div>
+              {/* Original Photo Layer */}
+              {activeTryOn.originalPhoto && (
+                <img
+                  src={activeTryOn.originalPhoto}
+                  alt="Original User Reference"
+                  className="stage-layer-img"
+                  style={{
+                    opacity: activeView === 'original' ? 1 : 0,
+                    transform: isZoomed ? 'scale(1.25)' : 'scale(1)',
+                    transition: 'transform 0.3s ease, opacity 0.3s ease',
+                  }}
+                />
+              )}
+
+              {/* Top Controls Overlay */}
+              <div className="stage-top-controls">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div className="mock-preview-pill">
+                    <span className="material-symbols-outlined fill-1" style={{ fontSize: '14px', color: 'var(--secondary-fixed-dim)' }}>
+                      auto_fix_high
+                    </span>
+                    <span>{activeTryOn.matchScore ? `${activeTryOn.matchScore} Match` : 'AI Generated'}</span>
+                  </div>
+
+                  {/* Demo Render Badge */}
+                  {activeTryOn.mode === 'demo' && (
+                    <div className="demo-render-badge">
+                      <span className="material-symbols-outlined" style={{ fontSize: '13px', marginRight: '4px' }}>
+                        science
+                      </span>
+                      <span>Demo render</span>
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  className="stage-zoom-btn"
+                  onClick={() => setIsZoomed(!isZoomed)}
+                  aria-label="Inspect fabric details"
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                    {isZoomed ? 'zoom_out' : 'zoom_in'}
+                  </span>
+                </button>
+              </div>
+
+              {/* Center Dynamic Garment Hotspot Chip */}
+              {activeView === 'ai' && (
+                <div className="center-hotspot-chip">
+                  <span
+                    style={{
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      backgroundColor: 'var(--primary)',
+                      boxShadow: '0 0 8px var(--primary)',
+                    }}
+                  />
+                  <span>{activeTryOn.fitNote || 'Structured Silk Fit'}</span>
+                </div>
+              )}
+
+              {/* Bottom Floating View Slider Pill (Original vs Virtual Try-On) */}
+              {activeTryOn.originalPhoto && (
+                <div className="stage-slider-pill">
+                  <button
+                    className={`slider-toggle-btn ${activeView === 'original' ? 'active' : 'inactive'}`}
+                    onClick={() => setActiveView('original')}
+                  >
+                    Original Photo
+                  </button>
+                  <button
+                    className={`slider-toggle-btn ${activeView === 'ai' ? 'active' : 'inactive'}`}
+                    onClick={() => setActiveView('ai')}
+                  >
+                    <span className="material-symbols-outlined fill-1" style={{ fontSize: '13px', marginRight: '4px' }}>
+                      auto_fix_high
+                    </span>
+                    Virtual Try-On
+                  </button>
+                </div>
+              )}
+            </>
+          )}
         </section>
 
-        {/* Phase B5: Per-Area Fit Report & Ease Breakdown */}
-        {productFitData && (
+        {/* Phase B5: Per-Area Fit Report & Ease Breakdown (shown when result available) */}
+        {activeTryOn?.aiRenderedImage && productFitData && (
           <section
             style={{
               padding: '12px 14px',
@@ -388,6 +578,43 @@ export default function TryOnPage() {
               <p style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)' }}>
                 {productFitData.fitDescriptor}
               </p>
+            )}
+
+            {productFitData.isEstimate && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '8px',
+                  padding: '8px 12px',
+                  borderRadius: '10px',
+                  backgroundColor: 'rgba(232, 221, 255, 0.4)',
+                  border: '1px solid rgba(124, 58, 237, 0.2)',
+                  fontSize: '0.75rem',
+                  color: 'var(--on-surface)',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '16px', color: 'var(--primary)' }}>
+                    info
+                  </span>
+                  <span>Based on height and body type only. Add measurements for a precise fit</span>
+                </div>
+                <Link
+                  to="/profile"
+                  style={{
+                    color: 'var(--primary)',
+                    fontWeight: 700,
+                    textDecoration: 'none',
+                    whiteSpace: 'nowrap',
+                    fontSize: '0.6875rem',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  Add
+                </Link>
+              </div>
             )}
 
             {productFitData.fitReport && productFitData.fitReport.length > 0 && (
@@ -431,44 +658,48 @@ export default function TryOnPage() {
           </section>
         )}
 
-        {/* 4. Action Buttons */}
-        <div className="tryon-actions-row">
-          <button className="tryon-action-btn tryon-action-save" onClick={handleSaveLook}>
-            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
-              bookmark_add
-            </span>
-            <span>Save to Wardrobe</span>
-          </button>
+        {/* 4. Action Buttons (shown when result available) */}
+        {activeTryOn?.aiRenderedImage && garment && (
+          <>
+            <div className="tryon-actions-row">
+              <button className="tryon-action-btn tryon-action-save" onClick={handleSaveLook}>
+                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
+                  bookmark_add
+                </span>
+                <span>Save to Wardrobe</span>
+              </button>
 
-          <button className="tryon-action-btn tryon-action-buy" onClick={handleShopItem}>
-            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
-              local_mall
-            </span>
-            <span>Shop Item · ₹{garment.price}</span>
-          </button>
-        </div>
+              <button className="tryon-action-btn tryon-action-buy" onClick={handleShopItem}>
+                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
+                  local_mall
+                </span>
+                <span>Shop Item · ₹{garment.price}</span>
+              </button>
+            </div>
 
-        <button
-          onClick={handleShareLook}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: 'var(--primary)',
-            fontSize: '0.8125rem',
-            fontWeight: 700,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '6px',
-            padding: '8px 0',
-          }}
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
-            share
-          </span>
-          <span>Share Virtual Fitting Look</span>
-        </button>
+            <button
+              onClick={handleShareLook}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--primary)',
+                fontSize: '0.8125rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px',
+                padding: '8px 0',
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+                share
+              </span>
+              <span>Share Virtual Fitting Look</span>
+            </button>
+          </>
+        )}
       </div>
 
       {/* Garment Change Picker Modal */}
@@ -525,7 +756,7 @@ export default function TryOnPage() {
                     gap: '12px',
                     padding: '8px 12px',
                     borderRadius: '12px',
-                    backgroundColor: prod.id === garment.id ? 'var(--secondary-fixed)' : 'var(--surface-container-low)',
+                    backgroundColor: prod.id === garment?.id ? 'var(--secondary-fixed)' : 'var(--surface-container-low)',
                     cursor: 'pointer',
                     transition: 'background-color 0.15s ease',
                   }}
@@ -546,7 +777,28 @@ export default function TryOnPage() {
                       ₹{prod.price}
                     </span>
                   </div>
-                  {prod.id === garment.id && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const itemUrl = prod.shopUrl || prod.shoppingUrl || prod.productUrl || 'https://www.myntra.com';
+                      window.open(itemUrl, '_blank', 'noopener,noreferrer');
+                    }}
+                    title={`Open link to ${prod.name} on store`}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: '4px',
+                      color: 'var(--primary)',
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
+                      open_in_new
+                    </span>
+                  </button>
+                  {prod.id === garment?.id && (
                     <span className="material-symbols-outlined" style={{ color: 'var(--primary)', fontSize: '18px' }}>
                       check
                     </span>

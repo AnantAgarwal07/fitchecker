@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { prisma } from "./db.js";
-import { executeTryOnJob } from "./services/tryOnPipeline.js";
+import { executeTryOnJob, claimJob } from "./services/tryOnPipeline.js";
 
 const WORKER_ID = `worker-${process.pid}-${Math.random().toString(36).substring(2, 6)}`;
 const CONCURRENCY = Number(process.env.WORKER_CONCURRENCY) || 3;
@@ -40,36 +40,22 @@ async function reapStuckJobs() {
 }
 
 /**
- * Claims a single job atomically using PostgreSQL FOR UPDATE SKIP LOCKED (A4)
+ * Claims a single job atomically using claimJob (A4 & Phase 2)
  */
 async function claimNextJob(): Promise<string | null> {
-  const claimedJobId = await prisma.$transaction(async (tx) => {
-    const jobs: any[] = await tx.$queryRaw`
-      SELECT id FROM "RenderJob"
-      WHERE status = 'QUEUED'
-        AND ("nextRunAt" IS NULL OR "nextRunAt" <= NOW())
-      ORDER BY "createdAt" ASC
-      LIMIT 1
-      FOR UPDATE SKIP LOCKED
-    `;
-
-    if (jobs.length === 0) return null;
-
-    const id = jobs[0].id;
-
-    await tx.$executeRaw`
-      UPDATE "RenderJob"
-      SET status = 'PROCESSING',
-          "lockedAt" = NOW(),
-          "lockedBy" = ${WORKER_ID},
-          attempts = attempts + 1
-      WHERE id = ${id}
-    `;
-
-    return id;
+  const queuedJob = await prisma.renderJob.findFirst({
+    where: {
+      status: "QUEUED",
+      OR: [{ nextRunAt: null }, { nextRunAt: { lte: new Date() } }],
+    },
+    orderBy: { createdAt: "asc" },
+    select: { id: true },
   });
 
-  return claimedJobId;
+  if (!queuedJob) return null;
+
+  const claimed = await claimJob(queuedJob.id, WORKER_ID);
+  return claimed ? queuedJob.id : null;
 }
 
 /**
@@ -102,7 +88,7 @@ async function runWorker() {
         activeJobsCount++;
 
         // Process job asynchronously without blocking loop
-        executeTryOnJob(jobId, WORKER_ID)
+        executeTryOnJob(jobId, WORKER_ID, true)
           .catch((err) => {
             console.error(`[Worker ${WORKER_ID}] Error processing job #${jobId}:`, err);
           })

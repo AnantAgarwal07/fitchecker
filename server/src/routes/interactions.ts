@@ -1,11 +1,11 @@
 import { FastifyPluginAsync } from "fastify";
 import { z } from "zod";
 import { prisma } from "../db.js";
-import { authenticateUser } from "../middleware/auth.js";
+import { requireAuth } from "../middleware/auth.js";
 
 export const interactionRoutes: FastifyPluginAsync = async (fastify) => {
-  // POST /api/v1/interactions (Phase C2: User Interaction Logging)
-  fastify.post("/api/v1/interactions", { preHandler: authenticateUser }, async (request, reply) => {
+  // POST /api/v1/interactions (Phase 3: User Interaction Logging requires authenticated token)
+  fastify.post("/api/v1/interactions", { preHandler: requireAuth }, async (request, reply) => {
     const InteractionSchema = z.object({
       type: z.enum([
         "VIEW",
@@ -31,7 +31,7 @@ export const interactionRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     const { type, productId, postId, targetUserId, dwellTimeMs, meta } = parsed.data;
-    const userId = request.user?.id || (request.body as any)?.userId || "u-ananya-sharma-001";
+    const userId = request.user!.id;
 
     const interaction = await prisma.interaction.create({
       data: {

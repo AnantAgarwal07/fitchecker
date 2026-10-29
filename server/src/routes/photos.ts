@@ -1,8 +1,9 @@
+import path from "path";
 import { FastifyPluginAsync } from "fastify";
 import { z } from "zod";
 import { prisma } from "../db.js";
 import { requireAuth } from "../middleware/auth.js";
-import { getSignedUploadUrl, deleteStorageObject, uploadImage } from "../services/storage.js";
+import { getSignedUploadUrl, deleteStorageObject, uploadImage, UPLOADS_DIR } from "../services/storage.js";
 
 export const photoRoutes: FastifyPluginAsync = async (fastify) => {
   // 1. Consent Gate: Record user consent for photo processing (A2)
@@ -91,21 +92,83 @@ export const photoRoutes: FastifyPluginAsync = async (fastify) => {
     }
   );
 
-  // 3. Local Direct Upload Handler (for local development direct uploads)
-  fastify.post("/api/v1/photos/direct-upload", async (request, reply) => {
-    const QuerySchema = z.object({
-      key: z.string(),
-    });
+  // 3. Local Direct Upload Handler (accepts POST & PUT, 10MB bodyLimit, requireAuth)
+  fastify.route({
+    method: ["POST", "PUT"],
+    url: "/api/v1/photos/direct-upload",
+    bodyLimit: 10 * 1024 * 1024,
+    preHandler: requireAuth,
+    handler: async (request, reply) => {
+      const key = (request.query as any)?.key;
+      if (!key || typeof key !== "string" || key.trim() === "") {
+        return reply.status(400).send({
+          error: "BadRequest",
+          message: "Missing or invalid storage key parameter.",
+        });
+      }
 
-    const parsed = QuerySchema.safeParse(request.query);
-    if (!parsed.success) {
-      return reply.status(400).send({ error: "Missing storage key" });
-    }
+      // Reject keys containing "..", leading "/", or backslashes "\"
+      if (key.includes("..") || key.startsWith("/") || key.startsWith("\\") || key.includes("\\")) {
+        return reply.status(400).send({
+          error: "BadRequest",
+          message: "Invalid storage key: path traversal or invalid path separators detected.",
+        });
+      }
 
-    const rawBody = (request.body as Buffer) || Buffer.from("");
-    await uploadImage(rawBody, parsed.data.key);
+      // Verify resolved path stays inside uploads/
+      const normalizedUploadsDir = path.resolve(UPLOADS_DIR);
+      const resolvedPath = path.resolve(UPLOADS_DIR, key);
+      if (!resolvedPath.startsWith(normalizedUploadsDir + path.sep) && resolvedPath !== normalizedUploadsDir) {
+        return reply.status(400).send({
+          error: "BadRequest",
+          message: "Invalid storage key: path resolves outside uploads directory.",
+        });
+      }
 
-    return reply.status(200).send({ success: true, key: parsed.data.key });
+      // Verify the key matches a UserPhoto.storageKey that belongs to the caller
+      const userPhoto = await prisma.userPhoto.findFirst({
+        where: {
+          storageKey: key,
+          deletedAt: null,
+        },
+      });
+
+      if (!userPhoto || userPhoto.userId !== request.user!.id) {
+        return reply.status(403).send({
+          error: "Forbidden",
+          message: "Forbidden: Storage key does not belong to the caller or was not found.",
+        });
+      }
+
+      // Validate Content-Type: allow only image/jpeg, image/png and image/webp
+      const rawContentType = request.headers["content-type"] || "";
+      const contentType = rawContentType.toLowerCase().split(";")[0].trim();
+      const allowedMimeTypes = ["image/jpeg", "image/png", "image/webp"];
+      if (!allowedMimeTypes.includes(contentType)) {
+        return reply.status(415).send({
+          error: "UnsupportedMediaType",
+          message: `Unsupported media type: only image/jpeg, image/png, and image/webp are allowed. Received: ${contentType || "none"}`,
+        });
+      }
+
+      // Reject empty bodies
+      const rawBody = request.body;
+      if (!rawBody || !Buffer.isBuffer(rawBody) || rawBody.length === 0) {
+        return reply.status(400).send({
+          error: "BadRequest",
+          message: "Empty image payload. Direct upload requires non-empty image binary data.",
+        });
+      }
+
+      const uploadResult = await uploadImage(rawBody, key, contentType);
+
+      return reply.status(200).send({
+        success: true,
+        key,
+        url: `/uploads/${key}`,
+        fullUrl: uploadResult.url,
+      });
+    },
   });
 
   // 4. Delete All User Photos (A2 Privacy requirement)

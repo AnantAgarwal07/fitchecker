@@ -1,5 +1,15 @@
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Always resolve to server/uploads directory
+export const UPLOADS_DIR = path.resolve(__dirname, "../../uploads");
+if (!fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+}
 
 export interface StorageConfig {
   provider: "supabase" | "s3" | "local";
@@ -36,20 +46,8 @@ export async function getSignedUploadUrl(
   const ext = path.extname(filename) || ".jpg";
   const storageKey = `user-${userId}/${Date.now()}-${Math.random().toString(36).substring(2, 7)}${ext}`;
 
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (storageConfig.provider === "supabase" && supabaseUrl && supabaseKey) {
-    // Generate Supabase storage signed upload URL
-    const uploadUrl = `${supabaseUrl}/storage/v1/object/upload/sign/${storageConfig.bucket}/${storageKey}`;
-    return {
-      uploadUrl,
-      storageKey,
-      expiresInSeconds: storageConfig.signedUrlExpirySeconds,
-    };
-  }
-
-  // Local / dev signed upload URL (handled by /api/v1/photos/upload-direct)
+  // All browser uploads pass through the authenticated API route. This prevents exposing
+  // storage credentials and lets uploadImage choose local or shared object storage.
   const apiBase = process.env.API_BASE_URL || "http://localhost:3000";
   const uploadUrl = `${apiBase}/api/v1/photos/direct-upload?key=${encodeURIComponent(storageKey)}`;
 
@@ -136,13 +134,13 @@ export async function uploadImage(
   }
 
   // Local storage write
-  const uploadsDir = path.resolve(process.cwd(), "uploads", path.dirname(storageKey));
+  const targetPath = path.resolve(UPLOADS_DIR, storageKey);
+  const uploadsDir = path.dirname(targetPath);
   if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
   }
 
-  const filePath = path.resolve(process.cwd(), "uploads", storageKey);
-  fs.writeFileSync(filePath, buffer);
+  fs.writeFileSync(targetPath, buffer);
 
   const apiBase = process.env.API_BASE_URL || "http://localhost:3000";
   return {
@@ -181,7 +179,7 @@ export async function deleteStorageObject(storageKey: string): Promise<boolean> 
 
   // Local storage deletion
   try {
-    const filePath = path.resolve(process.cwd(), "uploads", storageKey);
+    const filePath = path.resolve(UPLOADS_DIR, storageKey);
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
       return true;

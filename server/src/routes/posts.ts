@@ -20,6 +20,7 @@ function formatTimeAgo(date: Date): string {
 function formatPostResponse(post: any) {
   const taggedProducts = (post.products || []).map((pp: any) => {
     const primaryImg = pp.product?.ProductImage?.[0]?.imageUrl || post.imageUrl;
+    const itemUrl = pp.product?.productUrl || "https://www.myntra.com";
     return {
       id: pp.product?.id || pp.productId,
       name: pp.product?.name || "Garment",
@@ -31,9 +32,13 @@ function formatPostResponse(post: any) {
       category: pp.product?.category || post.category,
       xPercent: pp.xPercent,
       yPercent: pp.yPercent,
-      shopUrl: pp.product?.productUrl || "https://www.myntra.com",
+      shopUrl: itemUrl,
+      shoppingUrl: itemUrl,
+      productUrl: itemUrl,
     };
   });
+
+  const primaryShoppingUrl = taggedProducts[0]?.shopUrl || "https://www.myntra.com";
 
   return {
     id: post.id,
@@ -61,6 +66,8 @@ function formatPostResponse(post: any) {
     taggedCount: taggedProducts.length,
     products: taggedProducts,
     garments: taggedProducts,
+    shoppingUrl: primaryShoppingUrl,
+    shopUrl: primaryShoppingUrl,
   };
 }
 
@@ -71,6 +78,7 @@ export const postRoutes: FastifyPluginAsync = async (fastify) => {
       tab: z.enum(["all", "following", "trending", "casual", "streetwear", "ethnic wear", "formal", "party wear", "dresses", "college outfits"]).optional().default("all"),
       category: z.string().optional(),
       userId: z.string().optional(),
+      q: z.string().optional(),
       limit: z.coerce.number().min(1).max(50).default(20),
       page: z.coerce.number().min(1).default(1),
     });
@@ -80,10 +88,14 @@ export const postRoutes: FastifyPluginAsync = async (fastify) => {
       return reply.status(400).send({ error: parsed.error.format() });
     }
 
-    const { tab, category, userId, limit, page } = parsed.data;
+    const { tab, category, userId, q, limit, page } = parsed.data;
     const skip = (page - 1) * limit;
 
     const where: any = {};
+
+    if (userId) {
+      where.userId = userId;
+    }
 
     // Filter by category or tab
     const effectiveCategory = category || (tab !== "all" && tab !== "following" && tab !== "trending" ? tab : undefined);
@@ -93,13 +105,55 @@ export const postRoutes: FastifyPluginAsync = async (fastify) => {
 
     // Filter by following if tab === "following" (Phase C1)
     if (tab === "following") {
-      const followerId = userId || request.user?.id || "u-ananya-sharma-001";
+      const followerId = request.user?.id;
+      if (!followerId) {
+        return reply.status(200).send({
+          posts: [],
+          pagination: { total: 0, page, limit, totalPages: 0, hasMore: false },
+        });
+      }
       const following = await prisma.follow.findMany({
         where: { followerId },
         select: { followingId: true },
       });
       const followingIds = following.map((f) => f.followingId);
       where.userId = { in: followingIds.length > 0 ? followingIds : ["__none__"] };
+    }
+
+    // Full search across caption, tags, category, creator, and products (Phase 5)
+    if (q && q.trim().length > 0) {
+      const searchTrimmed = q.trim();
+      const searchLower = searchTrimmed.toLowerCase();
+      const searchUpper = searchTrimmed.toUpperCase();
+      const searchCaps = searchTrimmed.charAt(0).toUpperCase() + searchTrimmed.slice(1).toLowerCase();
+
+      const searchFilter = {
+        OR: [
+          { caption: { contains: searchTrimmed, mode: "insensitive" } },
+          { category: { contains: searchTrimmed, mode: "insensitive" } },
+          { tags: { hasSome: [searchTrimmed, searchLower, searchUpper, searchCaps] } },
+          { user: { name: { contains: searchTrimmed, mode: "insensitive" } } },
+          { user: { handle: { contains: searchTrimmed, mode: "insensitive" } } },
+          {
+            products: {
+              some: {
+                product: {
+                  OR: [
+                    { name: { contains: searchTrimmed, mode: "insensitive" } },
+                    { brand: { contains: searchTrimmed, mode: "insensitive" } },
+                  ],
+                },
+              },
+            },
+          },
+        ],
+      };
+
+      if (!where.AND) {
+        where.AND = [searchFilter];
+      } else {
+        where.AND.push(searchFilter);
+      }
     }
 
 
@@ -172,15 +226,10 @@ export const postRoutes: FastifyPluginAsync = async (fastify) => {
     return reply.status(200).send(formatPostResponse(post));
   });
 
-  // POST /api/v1/posts/:id/like
-  fastify.post("/api/v1/posts/:id/like", async (request, reply) => {
+  // POST /api/v1/posts/:id/like (Phase 3: requireAuth enforced, identity from token)
+  fastify.post("/api/v1/posts/:id/like", { preHandler: requireAuth }, async (request, reply) => {
     const { id: postId } = request.params as { id: string };
-    const BodySchema = z.object({
-      userId: z.string().default("u-ananya-sharma-001"),
-    });
-
-    const parsed = BodySchema.safeParse(request.body || {});
-    const userId = parsed.success ? parsed.data.userId : "u-ananya-sharma-001";
+    const userId = request.user!.id;
 
     const existingLike = await prisma.postLike.findUnique({
       where: { postId_userId: { postId, userId } },
@@ -213,6 +262,56 @@ export const postRoutes: FastifyPluginAsync = async (fastify) => {
       postId,
       isLiked,
       likesCount: post.likesCount,
+    });
+  });
+
+  // Comments are stored as Interaction records so they can be used by the feed scorer
+  // without introducing a second social-event store.
+  fastify.get("/api/v1/posts/:id/comments", { preHandler: authenticateUser }, async (request, reply) => {
+    const { id: postId } = request.params as { id: string };
+    const comments = await prisma.interaction.findMany({
+      where: { postId, type: "COMMENT" },
+      include: { user: { select: { handle: true, name: true, avatarUrl: true } } },
+      orderBy: { createdAt: "desc" },
+      take: 100,
+    });
+    return reply.status(200).send({
+      comments: comments.map((comment) => ({
+        id: comment.id,
+        text: (comment.meta as { text?: string } | null)?.text || "",
+        createdAt: comment.createdAt,
+        author: {
+          handle: comment.user.handle.startsWith("@") ? comment.user.handle : `@${comment.user.handle}`,
+          name: comment.user.name,
+          avatar: comment.user.avatarUrl,
+        },
+      })),
+    });
+  });
+
+  fastify.post("/api/v1/posts/:id/comments", { preHandler: requireAuth }, async (request, reply) => {
+    const { id: postId } = request.params as { id: string };
+    const parsed = z.object({ text: z.string().trim().min(1).max(500) }).safeParse(request.body);
+    if (!parsed.success) return reply.status(400).send({ error: parsed.error.format() });
+
+    const post = await prisma.post.findUnique({ where: { id: postId }, select: { id: true } });
+    if (!post) return reply.status(404).send({ error: "Post not found" });
+
+    const comment = await prisma.interaction.create({
+      data: { userId: request.user!.id, postId, type: "COMMENT", meta: { text: parsed.data.text } },
+      include: { user: { select: { handle: true, name: true, avatarUrl: true } } },
+    });
+    return reply.status(201).send({
+      comment: {
+        id: comment.id,
+        text: parsed.data.text,
+        createdAt: comment.createdAt,
+        author: {
+          handle: comment.user.handle.startsWith("@") ? comment.user.handle : `@${comment.user.handle}`,
+          name: comment.user.name,
+          avatar: comment.user.avatarUrl,
+        },
+      },
     });
   });
 

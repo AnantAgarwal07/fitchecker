@@ -228,6 +228,14 @@
   border-radius: var(--radius-md);
   background-color: var(--surface-container-low);
   border: 1px solid rgba(232, 229, 223, 0.5);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.curated-piece-row:hover {
+  background-color: var(--surface-container-high);
+  border-color: var(--primary);
+  transform: translateY(-1px);
 }
 
 .piece-left {
@@ -259,6 +267,37 @@
   font-size: 0.875rem;
   font-weight: 700;
   color: var(--primary);
+}
+
+.piece-action-icon-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--outline-variant);
+  background-color: var(--surface);
+  color: var(--on-surface-variant);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.piece-action-icon-btn:hover {
+  background-color: var(--surface-container-highest);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.piece-action-icon-btn.primary {
+  background-color: var(--primary-container);
+  color: var(--primary);
+  border-color: transparent;
+}
+
+.piece-action-icon-btn.primary:hover {
+  background-color: var(--primary);
+  color: #fff;
 }
 
 /* Modal Actions Footer */

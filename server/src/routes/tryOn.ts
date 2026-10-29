@@ -58,7 +58,7 @@ export const tryOnRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.post(
     "/api/v1/try-on",
     {
-      preHandler: authenticateUser,
+      preHandler: requireAuth,
       config: {
         rateLimit: {
           max: 10,
@@ -81,10 +81,7 @@ export const tryOnRoutes: FastifyPluginAsync = async (fastify) => {
         return reply.status(400).send({ error: parsed.error.format() });
       }
 
-      const effectiveUserId =
-        request.user && !request.user.isDemoUser
-          ? request.user.id
-          : parsed.data.userId || request.user?.id || "u-ananya-sharma-001";
+      const effectiveUserId = request.user!.id; // Identity strictly from verified token
 
       const { productId, userPhotoUrl, userPhotoId, userHeightCm, sizeSelected } = parsed.data;
 
@@ -147,17 +144,24 @@ export const tryOnRoutes: FastifyPluginAsync = async (fastify) => {
 
     const session = job.tryOnSession;
 
+    let progressPercent = 0;
+    if (job.status === "QUEUED") progressPercent = 10;
+    else if (job.status === "PROCESSING") progressPercent = 50;
+    else if (job.status === "COMPLETED") progressPercent = 100;
+    else if (job.status === "FAILED") progressPercent = 0;
+
     return reply.status(200).send({
       jobId: job.id,
       tryOnSessionId: job.tryOnSessionId,
       status: job.status,
       attempts: job.attempts,
       mode: session?.mode || "demo",
-      renderedImageUrl: session?.renderedImageUrl,
+      renderedImageUrl: session?.renderedImageUrl || null,
       fitScore: session?.fitScore,
       fitNote: session?.fitNote,
       fitReport: session?.fitReport,
-      errorMessage: job.lastError || session?.errorReason,
+      errorMessage: job.lastError || session?.errorReason || null,
+      progressPercent,
       durationMs: job.durationMs,
       completedAt: job.completedAt,
     });
@@ -178,7 +182,10 @@ export const tryOnRoutes: FastifyPluginAsync = async (fastify) => {
 
     const { limit, page } = parsed.data;
     const callerId = request.user?.id;
-    const requestedUserId = parsed.data.userId || callerId || "u-ananya-sharma-001";
+    const requestedUserId = parsed.data.userId || callerId;
+    if (!requestedUserId) {
+      return reply.status(401).send({ error: "Unauthorized", message: "Authentication required" });
+    }
     const isOwner = callerId === requestedUserId;
 
     const where: any = { userId: requestedUserId };
@@ -241,6 +248,57 @@ export const tryOnRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     return reply.status(200).send(formatSessionResponse(session));
+  });
+
+  // PUT /api/v1/try-on/sessions/:id (Update session isSaved, isPrivate, or visibility)
+  fastify.put("/api/v1/try-on/sessions/:id", { preHandler: requireAuth }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+
+    const UpdateSchema = z.object({
+      visibility: z.enum(["PRIVATE", "PUBLIC"]).optional(),
+      isPrivate: z.boolean().optional(),
+      isSaved: z.boolean().optional(),
+    });
+
+    const parsed = UpdateSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.status(400).send({ error: parsed.error.format() });
+    }
+
+    const session = await prisma.tryOnSession.findUnique({ where: { id } });
+    if (!session) {
+      return reply.status(404).send({ error: "Session not found" });
+    }
+
+    if (session.userId !== request.user!.id) {
+      return reply.status(403).send({ error: "Forbidden: Not session owner" });
+    }
+
+    const data: any = {};
+    if (parsed.data.visibility) {
+      data.visibility = parsed.data.visibility;
+      data.isPrivate = parsed.data.visibility === "PRIVATE";
+    }
+    if (parsed.data.isPrivate !== undefined) {
+      data.isPrivate = parsed.data.isPrivate;
+      data.visibility = parsed.data.isPrivate ? "PRIVATE" : "PUBLIC";
+    }
+    if (parsed.data.isSaved !== undefined) {
+      data.isSaved = parsed.data.isSaved;
+    }
+
+    const updated = await prisma.tryOnSession.update({
+      where: { id },
+      data,
+      include: {
+        product: { include: { ProductImage: true } },
+      },
+    });
+
+    return reply.status(200).send({
+      success: true,
+      session: formatSessionResponse(updated),
+    });
   });
 
   // PATCH /api/v1/try-on/:id/visibility (Owner only, A2 requirement)

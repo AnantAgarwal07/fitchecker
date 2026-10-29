@@ -268,6 +268,7 @@ export const productRoutes: FastifyPluginAsync = async (fastify) => {
       fitDescriptor: recommendation.fitDescriptor,
       matchScore: matchResult.matchScore,
       measuredFit: recommendation.measuredFit,
+      isEstimate: matchResult.isEstimate,
       confidence: recommendation.confidence,
       fitNote: recommendation.humanReadableNotes,
       breakdown: matchResult.breakdown,
@@ -292,16 +293,16 @@ export const productRoutes: FastifyPluginAsync = async (fastify) => {
       return reply.status(404).send({ error: "Product not found" });
     }
 
-    const userId = request.user?.id || "u-ananya-sharma-001";
-
-    // Asynchronously log BUY_CLICK interaction event
-    prisma.interaction.create({
-      data: {
-        userId,
-        productId,
-        type: "BUY_CLICK",
-      },
-    }).catch((err) => console.warn("Failed to log BUY_CLICK interaction:", err.message));
+    if (request.user?.id) {
+      // Asynchronously log BUY_CLICK interaction event
+      prisma.interaction.create({
+        data: {
+          userId: request.user.id,
+          productId,
+          type: "BUY_CLICK",
+        },
+      }).catch((err) => console.warn("Failed to log BUY_CLICK interaction:", err.message));
+    }
 
     const targetUrl = product.productUrl || "https://www.myntra.com";
     return reply.redirect(targetUrl, 302);
