@@ -31,19 +31,19 @@ Discover runway looks, tag and inspect outfit hotspot pins linked to real catalo
 
 ```mermaid
 graph TD
-    Client["React 19 + Vite Frontend (Port 5173)\nClerk Auth + Vanilla CSS Tokens"]
-    API["Fastify 5 + TypeScript API (Port 3000)\nAuth Middleware + Rate Limiting"]
-    Neon[("Neon PostgreSQL\n(Products, Looks, FeedCache, Users)")]
-    Worker["Try-On Worker\n(Inline Dev or Standalone Process)"]
-    Gemini["Google GenAI API\n(Gemini 2.5 Flash Image)"]
-    Clerk["Clerk Authentication\n(JWT Verification)"]
+    Client["React 19 + Vite Frontend<br/>(Port 5173)"]
+    API["Fastify 5 + TypeScript API<br/>(Port 3000)"]
+    Neon[("Neon PostgreSQL Database<br/>Products, Looks, FeedCache, Users")]
+    Worker["Try-On Background Worker<br/>(Inline or Standalone)"]
+    Gemini["Google GenAI API<br/>(Gemini 2.5 Flash Image)"]
+    Clerk["Clerk Authentication<br/>(JWT Verification)"]
 
     Client -->|REST & Bearer Token| API
-    Client -->|Clerk Components & Tokens| Clerk
-    API -->|JWT Public Key Verify| Clerk
-    API -->|Prisma Client (Pooled)| Neon
-    API -.->|Inline Job Spawn (INLINE_WORKER=true)| Worker
-    Worker -->|Prisma Direct (Atomic claimJob)| Neon
+    Client -->|Clerk Auth & Session| Clerk
+    API -->|JWT Verification| Clerk
+    API -->|Prisma Pooled Connection| Neon
+    API -.->|Spawn Background Job| Worker
+    Worker -->|Prisma Direct Connection| Neon
     Worker -->|Multimodal Try-On Prompt| Gemini
 ```
 
